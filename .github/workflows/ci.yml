@@ -1,0 +1,55 @@
+name: Foundation validation
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17.6-bookworm
+        env:
+          POSTGRES_DB: movie
+          POSTGRES_USER: movie
+          POSTGRES_PASSWORD: ci-only-password
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U movie -d movie"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+      redis:
+        image: redis:7.4.6-bookworm
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 3s --health-retries 12
+    env:
+      APP_ENVIRONMENT: test
+      APP_DATABASE_URL: postgresql://movie:ci-only-password@localhost:5432/movie
+      APP_REDIS_URL: redis://localhost:6379/0
+      RUN_SERVICE_TESTS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.6"
+          python-version: "3.12.14"
+      - run: uv sync --locked
+      - run: uv run --no-sync ruff check .
+      - run: uv run --no-sync ruff format --check .
+      - run: uv run --no-sync mypy
+      - run: uv run --no-sync bandit -r app -q
+      - run: uv run --no-sync pip-audit --cache-dir .tools/pip-audit-cache
+      - run: uv run --no-sync pytest -q
+  containers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose --env-file .env.example --profile storage config --quiet
+      - run: docker compose --env-file .env.example --profile storage up --build --wait --wait-timeout 180
+      - run: curl --fail http://localhost:8000/ready
+      - run: curl --fail http://localhost:5000/
+      - run: docker compose --env-file .env.example exec -T worker celery -A app.workers.celery_app:celery_app inspect ping
+      - run: docker compose --env-file .env.example logs --no-color
+        if: failure()
+      - run: docker compose --env-file .env.example --profile storage down
+        if: always()
