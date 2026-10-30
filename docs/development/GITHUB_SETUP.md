@@ -3,16 +3,16 @@
 Roadmap 4.0 · Instruction 003 · 30 October 2026.
 
 ## Current evidence
-`git remote -v` returned no remote. Workflow YAML trigger/job/permission/locked-install/integration/cleanup structure checks passed. Official actionlint 1.7.11 was downloaded to ignored `.tools/`, checked against the official release SHA-256 checksum and executed successfully:
+Historical Instruction 003 result: `git remote -v` returned no remote. Instruction 005 now confirms origin/main at vistait2018/ai-movie-platform and successful [GitHub run 41126826693](https://github.com/vistait2018/ai-movie-platform/actions/runs/41126826693) for repair ec605fa7aa082c8ed20b79bb400b987387339682 (quality and containers both passed). Workflow YAML trigger/job/permission/locked-install/integration/cleanup structure checks passed. Official actionlint 1.7.11 was downloaded to ignored `.tools/`, checked against the official release SHA-256 checksum and executed successfully:
 
 ```powershell
 .tools/actionlint-1.7.11/actionlint.exe -version
 .tools/actionlint-1.7.11/actionlint.exe -shellcheck= -pyflakes= .github/workflows/ci.yml
 ```
 
-No actionlint findings. External ShellCheck/Pyflakes integrations were explicitly disabled because they are not installed; Ruff and mypy cover Python application checks separately. This is local workflow validation, not GitHub Actions execution, repository setting verification or proof an action download will succeed on a runner.
+No actionlint findings. External ShellCheck/Pyflakes integrations were explicitly disabled because they are not installed; Ruff and mypy cover Python application checks separately. That was local validation only; Instruction 005 subsequently verified actual GitHub job execution. Classic branch protection returned 404 and active main rules returned no entries; enforcement remains outstanding.
 
-## Required repository-owner setup — not executed
+## Repository-owner setup checklist — current progress
 1. Choose the GitHub account/organization, repository name and visibility; create an empty repository without generated README/license files that would conflict with this initial history. Confirm permissions and plan support for intended branch protection/rulesets.
 2. Obtain explicit authorization before adding a remote or pushing this local repository. Then use the actual owner/repository URL, not a guessed account. Configure HTTPS credential management or approved SSH keys; never put access tokens in remote URLs.
 3. Push the reviewed initial `main` history only after authorization. The existing workflow triggers on push and pull_request. No paid AI/payment secrets are needed for the foundation jobs; service passwords in CI are disposable test values.
@@ -28,7 +28,7 @@ git push -u origin main
 ```
 
 ## Remaining Phase 1 acceptance
-The roadmap requires a documented clean setup, passing automated tests and CI that rejects broken changes. Local tests and isolated same-machine setup are verified. Actual remote CI execution, enforcement/negative-test evidence and repository branch workflow remain blocking gates. Do not label Phase 1 complete based on YAML lint alone.
+The roadmap requires a documented clean setup, passing automated tests and CI that rejects broken changes. Local tests, isolated same-machine setup and actual Ubuntu remote CI execution are verified. Repository creation/push and the positive workflow-run steps above are complete under Instruction 005. Required-check enforcement/negative-test evidence and protected branch workflow remain blocking gates. Do not label Phase 1 complete based on YAML lint alone.
 
 ## Sources
 [Official actionlint installation](https://github.com/rhysd/actionlint/blob/main/docs/install.md) and [usage](https://github.com/rhysd/actionlint/blob/main/docs/usage.md). Recheck GitHub repository/ruleset availability for the chosen account and plan when remote setup is authorized.

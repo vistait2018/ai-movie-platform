@@ -1,14 +1,14 @@
 # Roadmap 4.0 phase status
 
-Updated: 30 October 2026 (Africa/Lagos). Instructions 001–003.
+Updated: 31 October 2026 (Africa/Lagos). Instructions 001–005.
 
 ## Acceptance summary
-**No phase is marked complete.** Phase 0 documentation is prepared for owner review; open business decisions prevent final acceptance. Phase 1 local container and real-service verification now passes. An isolated clean setup has also passed on this machine and the initial commit is finalized under Instruction 003. Actual GitHub CI execution, branch protection/enforcement and an independent second-host setup remain outstanding.
+**No phase is marked complete.** Phase 0 documentation is prepared for owner review; open business decisions prevent final acceptance. Phase 1 local container and real-service verification now passes. An isolated clean setup has also passed on this machine and the initial commit is finalized under Instruction 003. GitHub Ubuntu CI and independent runner setup passed for repair commit `ec605fa7aa082c8ed20b79bb400b987387339682` ([run 41126826693](https://github.com/vistait2018/ai-movie-platform/actions/runs/41126826693)). Branch protection and required-check enforcement remain outstanding.
 
 | Phase | Status | Evidence / remaining gate |
 | --- | --- | --- |
 | 0 | Documentation prepared; approval pending | PRD, MVP scope, business rules, roles, architecture, preliminary database design, decisions, risks and roadmap written to the working tree. BR-01–13 and proposed service targets await owner decisions. |
-| 1 | In progress | Local verification passed: Docker 29.8.2 engine/CLI, Compose 5.5.1 config/build/startup, PostgreSQL SELECT 1, Redis PING, live API readiness, real Celery task completion and optional Moto smoke test. Enabled complete suite: 24 passed, no skips; Ruff/format/mypy/Bandit/pip check/lock/audit pass. Instruction 003 repeated this from an isolated source snapshot/new environment/new volumes; actionlint passed. Initial commit finalized; GitHub CI/protections and a second-host setup remain unverified; no remote/push created. |
+| 1 | In progress | Local verification passed: Docker 29.8.2 engine/CLI, Compose 5.5.1 config/build/startup, PostgreSQL SELECT 1, Redis PING, live API readiness, real Celery task completion and optional Moto smoke test. Enabled complete suite: 24 passed, no skips; Ruff/format/mypy/Bandit/pip check/lock/audit pass. Instruction 003 repeated this from an isolated source snapshot/new environment/new volumes; actionlint passed. Repair commit `ec605fa7aa082c8ed20b79bb400b987387339682` pushed to origin/main; GitHub quality and containers jobs both passed on Ubuntu, including 24 real-service tests. Independent CI setup verified. Branch protection/enforcement remains unverified and unconfigured. |
 | 2 | Plan prepared; implementation not started | Proposed web/mobile opaque-session architecture, minimum identity migrations, RBAC, registration/recovery/MFA and implementation sequence documented in AUTHENTICATION_PLAN.md. No auth/schema code added. |
 | 3 | Design only | Preliminary entity relationships documented; no SQLAlchemy schema or Alembic migrations. |
 | 4 | Not started | Catalogue/content APIs and publishing absent. |
@@ -52,12 +52,13 @@ Updated: 30 October 2026 (Africa/Lagos). Instructions 001–003.
 - [x] CI definition and Windows setup/troubleshooting documentation.
 - [x] Docker build, Compose semantic validation and actual services/worker readiness verified in Instruction 002, including successful task completion and emulator HTTP smoke test.
 - [x] Isolated clean setup verified on this host with fresh source directory, virtual environment, credentials and Docker volumes; 24 tests passed, including real dependencies.
-- [ ] Clean setup independently verified on another developer/CI host.
-- [ ] GitHub workflow execution and required branch protections verified.
-- [x] Initial commit reviewed and created as the final step of Instruction 003; resolve SHA with `git log -1 --format=%H`. Remote/push still require separate explicit authorization.
+- [x] Clean setup independently verified on GitHub Ubuntu runners: fresh locked dependency install, PostgreSQL/Redis integration, Docker build/startup/readiness/storage/worker checks passed in run 41126826693.
+- [x] GitHub workflow execution verified: quality and containers both success for ec605fa7aa082c8ed20b79bb400b987387339682.
+- [ ] Required main-branch protections/ruleset and rejected-broken-PR enforcement verified. Classic protection returned 404 and active branch rules returned an empty list.
+- [x] Initial commit reviewed and created as the final step of Instruction 003; initial SHA `62ef9bc7deb560bf59c0e19c4a2ff1efa79c8381`. Instruction 005 authorized and completed normal push to the confirmed origin/main repository.
 
 ## Next development task
-Review owner decision register BR-01–13 and approve Phase 0 baseline. Local Docker and real-service verification is recorded in Instruction 002. Only when remote work is authorized, execute GitHub CI and establish/test branch protections; verify setup on a second host before accepting Phase 1. Then begin Phase 2 with the minimum identity database/migration support from Phase 3, retaining the planned first story-to-catalogue functional slice.
+Review owner decision register BR-01–13 and approve Phase 0 baseline. Local Docker and real-service verification is recorded in Instruction 002. Instruction 005 completed the authorized push and successful Ubuntu CI/clean setup. Establish and test required main-branch protections and record acceptance before marking Phase 1 complete. Then begin Phase 2 with the minimum identity database/migration support from Phase 3, retaining the planned first story-to-catalogue functional slice.
 
 Latest commands, acceptance matrix and Git/Phase 2 preparation: [Instruction 003 report](../DEVELOPMENT_REPORT_003.md). Prior service verification: [Instruction 002 report](../DEVELOPMENT_REPORT_002.md). Historical implementation: [Instruction 001 report](../DEVELOPMENT_REPORT_001.md).
 
@@ -66,3 +67,7 @@ Phase 2 proposal: [Authentication plan](../architecture/AUTHENTICATION_PLAN.md).
 ## Windows host integration follow-up
 
 Verified the repaired host runner: 24 tests passed, zero failures and zero skipped integration tests, with PostgreSQL and Redis enabled. IPv6-first localhost attempts caused the previous two-second timeouts; host-only test configuration now loads .env and selects IPv4 loopback on Windows. No application/container configuration or phase acceptance gates changed. See [diagnosis and handover](../LOCAL_INTEGRATION_TESTING.md).
+
+## Instruction 005 — remote CI verification
+
+Committed and pushed repair `ec605fa7aa082c8ed20b79bb400b987387339682` to `vistait2018/ai-movie-platform`, branch main. Windows official runner: 24 passed, no failures/skips. GitHub quality: success, Ubuntu real-service suite 24 passed; containers: success. [Verified run](https://github.com/vistait2018/ai-movie-platform/actions/runs/41126826693). Ruff code-block spacing in report 002 was fixed without excluding docs from formatting. Remaining Phase 1 gate: required branch/check enforcement, including evidence broken changes cannot integrate. Phase 0 approvals remain separate and pending. [Full report](../DEVELOPMENT_REPORT_005.md).
