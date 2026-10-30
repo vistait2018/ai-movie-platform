@@ -96,9 +96,11 @@ from app.workers.celery_app import celery_app
 outcome = {}
 expected_id = None
 
+
 def completed(event):
     if event.get("uuid") == expected_id:
         outcome.update(event)
+
 
 enabled = celery_app.control.enable_events(reply=True, timeout=5)
 assert enabled, "No worker acknowledged event monitoring"

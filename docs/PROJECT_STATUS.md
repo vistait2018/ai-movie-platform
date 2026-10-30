@@ -11,3 +11,7 @@ The authorized initial commit is finalized as the last step of Instruction 003; 
 Phase 2 authentication architecture, identity schema/migration sequence and security/testing plan are [prepared for review](architecture/AUTHENTICATION_PLAN.md). Authentication is not implemented. No new application dependencies or migrations were added. The remaining product/AI/streaming/finance/mobile features remain future roadmap work.
 
 The original five development services remain running and healthy. Isolated verification containers were stopped without deleting any volume. Ignored `.tools/clean-003` retains the verification environment and local test configuration. No production deployment, live financial transaction or paid AI call occurred.
+
+## Windows host integration repair
+
+The repeatable `scripts/run_tests.py` command now loads local service configuration through an isolated session fixture and maps Windows localhost to IPv4 loopback. Final execution: **24 passed, zero failures/errors/skipped integration tests**, with real PostgreSQL/Redis probes. Runtime/container configuration and existing volumes are unchanged. Exact cause, command and handover: [integration repair report](LOCAL_INTEGRATION_TESTING.md).

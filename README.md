@@ -1,6 +1,6 @@
 # AI Movie Streaming & Creator Platform
 
-Shared FastAPI foundation for web, Flutter Android and Flutter iOS. Roadmap 4.0 is authoritative; this is not yet a streaming or AI product. See [phase status](docs/roadmap/PHASE_STATUS.md) and [latest development report](docs/DEVELOPMENT_REPORT_003.md).
+Shared FastAPI foundation for web, Flutter Android and Flutter iOS. Roadmap 4.0 is authoritative; this is not yet a streaming or AI product. See [phase status](docs/roadmap/PHASE_STATUS.md) and [latest development report](docs/LOCAL_INTEGRATION_TESTING.md).
 
 ## Windows setup
 
@@ -56,25 +56,31 @@ PostgreSQL and Redis are bound to loopback for local tests; Compose is developme
 
 ## Validation and dependency policy
 
+Install development dependencies on the Windows host, using the working Python 3.12 environment. Keep the existing PostgreSQL/Redis services running. Store their actual local connection URLs in ignored `.env`; the example now uses IPv4 loopback. Do not copy production credentials into test configuration.
+
 ```powershell
 $env:UV_PROJECT_ENVIRONMENT = '.venv-dev'
 uv sync --locked
-uv run --no-sync pytest -q
+# Full suite, real PostgreSQL/Redis enabled, unique safe temp/cache directories:
+.\.venv-dev\Scripts\python.exe scripts/run_tests.py
+# Only the real-service integration test:
+.\.venv-dev\Scripts\python.exe scripts/run_tests.py --integration-only
+# Select a different local settings file explicitly:
+.\.venv-dev\Scripts\python.exe scripts/run_tests.py --env-file C:\path\to\local-test.env
 uv run --no-sync ruff check .
 uv run --no-sync ruff format --check .
 uv run --no-sync mypy
-uv run --no-sync bandit -r app -q
+uv run --no-sync bandit -r app scripts -q
 uv run --no-sync pip-audit --cache-dir .tools/pip-audit-cache
-# With services running, opt in to the real dependency probe test:
-$env:RUN_SERVICE_TESTS = '1'
-uv run --no-sync pytest -m integration -q
-Remove-Item Env:RUN_SERVICE_TESTS
 ```
 
-For Windows real-service tests, explicitly set `APP_DATABASE_URL` and `APP_REDIS_URL` with `127.0.0.1` rather than `localhost` if name resolution exhausts the readiness timeout. Match the database credentials to the local Compose environment; the ignored `.env` file is not loaded by the integration test's module-level URL defaults. Instruction 002 used the `.env.example` placeholder for isolated local verification only.
+The runner uses its current interpreter, executes pytest from the repository root and enables integration only in the child process. It does not change your PowerShell environment, start/stop containers, install packages or alter database volumes. It creates a unique ignored `.tools/pytest-runs/run-*/` parent and gives pytest fresh `tmp`/`cache` children, avoiding inaccessible shared temp directories and deletion/reuse of existing paths. Test artifacts are retained there for inspection.
 
-If an elevated run cannot access an older pytest temp/cache directory, first create the ignored parent with `New-Item -ItemType Directory -Force .tools`, then use a fresh child directory with `--basetemp` and `-o cache_dir=...`; do not delete or change ACLs on shared temporary directories. Use a new, non-existing basetemp path because pytest owns and may clear that directory.
+`service_settings` is a session-scoped pytest fixture: process `APP_DATABASE_URL`/`APP_REDIS_URL` override the selected file; the default file is repository `.env`. Explicit missing files, invalid settings and absent service URLs fail clearly. No credential fallback is hardcoded in the integration test. The fixture captures settings before function-scoped unit isolation clears APP_*; unit tests still clear cached settings and dependency overrides per test.
 
+On Windows only, the fixture maps the exact URL hostname `localhost` to `127.0.0.1`, preserving credentials, port, database and query parameters. Other hosts and Linux CI values are unchanged. Compose exposes IPv4 loopback; Windows tried IPv6 `::1` first, whose connections timed out before the two-second readiness deadline. This was a connection-family problem, not slow DNS lookup or unhealthy services. Do not lengthen the application deadline or change working container service names to fix host-side tests.
+
+The API Docker image intentionally uses `uv sync --no-dev` and excludes tests. `No module named pytest` inside that runtime is expected. Run this host command instead of installing pytest into the API container. No production image or Compose service change is required. [Exact diagnosis and executed results](docs/LOCAL_INTEGRATION_TESTING.md).
 
 `pyproject.toml` declares Python and dependency ranges; `uv.lock` records resolved versions and hashes across supported platforms. Change dependencies intentionally with `uv lock`, review the diff and audit, then use `uv sync --locked` in CI. Docker uses the same lock without development tools. Base image tags are versioned; digest pinning and image scanning remain production hardening work.
 

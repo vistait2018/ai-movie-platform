@@ -62,3 +62,7 @@ Review owner decision register BR-01–13 and approve Phase 0 baseline. Local Do
 Latest commands, acceptance matrix and Git/Phase 2 preparation: [Instruction 003 report](../DEVELOPMENT_REPORT_003.md). Prior service verification: [Instruction 002 report](../DEVELOPMENT_REPORT_002.md). Historical implementation: [Instruction 001 report](../DEVELOPMENT_REPORT_001.md).
 
 Phase 2 proposal: [Authentication plan](../architecture/AUTHENTICATION_PLAN.md). Remote prerequisites: [GitHub setup](../development/GITHUB_SETUP.md).
+
+## Windows host integration follow-up
+
+Verified the repaired host runner: 24 tests passed, zero failures and zero skipped integration tests, with PostgreSQL and Redis enabled. IPv6-first localhost attempts caused the previous two-second timeouts; host-only test configuration now loads .env and selects IPv4 loopback on Windows. No application/container configuration or phase acceptance gates changed. See [diagnosis and handover](../LOCAL_INTEGRATION_TESTING.md).

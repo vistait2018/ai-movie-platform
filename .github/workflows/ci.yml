@@ -24,8 +24,8 @@ jobs:
           --health-interval 5s --health-timeout 3s --health-retries 12
     env:
       APP_ENVIRONMENT: test
-      APP_DATABASE_URL: postgresql://movie:ci-only-password@localhost:5432/movie
-      APP_REDIS_URL: redis://localhost:6379/0
+      APP_DATABASE_URL: postgresql://movie:ci-only-password@127.0.0.1:5432/movie
+      APP_REDIS_URL: redis://127.0.0.1:6379/0
       RUN_SERVICE_TESTS: "1"
     steps:
       - uses: actions/checkout@v4
@@ -37,9 +37,11 @@ jobs:
       - run: uv run --no-sync ruff check .
       - run: uv run --no-sync ruff format --check .
       - run: uv run --no-sync mypy
-      - run: uv run --no-sync bandit -r app -q
+      - run: uv run --no-sync mypy scripts/run_tests.py
+      - run: uv run --no-sync bandit -r app scripts -q
+      - run: uv run --no-sync pip check
       - run: uv run --no-sync pip-audit --cache-dir .tools/pip-audit-cache
-      - run: uv run --no-sync pytest -q
+      - run: uv run --no-sync python scripts/run_tests.py --env-file .env.example
   containers:
     runs-on: ubuntu-latest
     steps:
