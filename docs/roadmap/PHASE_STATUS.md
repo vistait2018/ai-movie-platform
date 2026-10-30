@@ -1,14 +1,16 @@
 # Roadmap 4.0 phase status
 
-Updated: 31 October 2026 (Africa/Lagos). Instructions 001–005.
+Updated: 31 October 2026 (Africa/Lagos). Official Roadmap Version 4.0 is unchanged.
 
-## Acceptance summary
-**No phase is marked complete.** Phase 0 documentation is prepared for owner review; open business decisions prevent final acceptance. Phase 1 local container and real-service verification now passes. An isolated clean setup has also passed on this machine and the initial commit is finalized under Instruction 003. GitHub Ubuntu CI and independent runner setup passed for repair commit `ec605fa7aa082c8ed20b79bb400b987387339682` ([run 41126826693](https://github.com/vistait2018/ai-movie-platform/actions/runs/41126826693)). Branch protection and required-check enforcement remain outstanding.
+## Current acceptance
+**Phase 1 is complete and formally accepted.** All mandatory development-foundation requirements have verified evidence, including real CI, protected-main enforcement, clean setup and current local service readiness. [Formal acceptance](PHASE_1_ACCEPTANCE.md), [report 006](../DEVELOPMENT_REPORT_006.md), [CI report 005](../DEVELOPMENT_REPORT_005.md).
+
+Phase 0 commercial/product owner decisions remain pending separately. Phase 2 is prepared for implementation; authentication is not implemented yet.
 
 | Phase | Status | Evidence / remaining gate |
 | --- | --- | --- |
 | 0 | Documentation prepared; approval pending | PRD, MVP scope, business rules, roles, architecture, preliminary database design, decisions, risks and roadmap written to the working tree. BR-01–13 and proposed service targets await owner decisions. |
-| 1 | In progress | Local verification passed: Docker 29.8.2 engine/CLI, Compose 5.5.1 config/build/startup, PostgreSQL SELECT 1, Redis PING, live API readiness, real Celery task completion and optional Moto smoke test. Enabled complete suite: 24 passed, no skips; Ruff/format/mypy/Bandit/pip check/lock/audit pass. Instruction 003 repeated this from an isolated source snapshot/new environment/new volumes; actionlint passed. Repair commit `ec605fa7aa082c8ed20b79bb400b987387339682` pushed to origin/main; GitHub quality and containers jobs both passed on Ubuntu, including 24 real-service tests. Independent CI setup verified. Branch protection/enforcement remains unverified and unconfigured. |
+| 1 | **Complete — accepted 31 October 2026** | Local and independent Ubuntu setup/CI verified; protected main enforcement proven; credential sources reconciled with authorization; live API/worker healthy; 24 tests passed, quality/security checks passed, data preserved. See PHASE_1_ACCEPTANCE.md and report 006. |
 | 2 | Plan prepared; implementation not started | Proposed web/mobile opaque-session architecture, minimum identity migrations, RBAC, registration/recovery/MFA and implementation sequence documented in AUTHENTICATION_PLAN.md. No auth/schema code added. |
 | 3 | Design only | Preliminary entity relationships documented; no SQLAlchemy schema or Alembic migrations. |
 | 4 | Not started | Catalogue/content APIs and publishing absent. |
@@ -41,33 +43,24 @@ Updated: 31 October 2026 (Africa/Lagos). Instructions 001–005.
 | 31 | Not started | No commercial operation. |
 
 ## Phase 1 acceptance checklist
-- [x] Audit and preserve original endpoint behavior; original two tests executed successfully.
-- [x] Working Python replacement, dependency declaration and generated cross-platform lock.
-- [x] Application package boundaries and documented Flutter workspace strategy.
-- [x] Environment separation, secret examples, validated settings and ignored local data.
-- [x] Separate liveness/readiness, sanitized failures and structured application logging.
-- [x] Celery JSON worker foundation with bounded task execution; no paid integrations.
-- [x] Compose/Docker definitions for API, worker, PostgreSQL, Redis and optional disposable S3 emulation.
-- [x] Local pytest, Ruff, mypy, Bandit, dependency consistency and advisory scan executed successfully.
-- [x] CI definition and Windows setup/troubleshooting documentation.
-- [x] Docker build, Compose semantic validation and actual services/worker readiness verified in Instruction 002, including successful task completion and emulator HTTP smoke test.
-- [x] Isolated clean setup verified on this host with fresh source directory, virtual environment, credentials and Docker volumes; 24 tests passed, including real dependencies.
-- [x] Clean setup independently verified on GitHub Ubuntu runners: fresh locked dependency install, PostgreSQL/Redis integration, Docker build/startup/readiness/storage/worker checks passed in run 41126826693.
-- [x] GitHub workflow execution verified: quality and containers both success for ec605fa7aa082c8ed20b79bb400b987387339682.
-- [ ] Required main-branch protections/ruleset and rejected-broken-PR enforcement verified. Classic protection returned 404 and active branch rules returned an empty list.
-- [x] Initial commit reviewed and created as the final step of Instruction 003; initial SHA `62ef9bc7deb560bf59c0e19c4a2ff1efa79c8381`. Instruction 005 authorized and completed normal push to the confirmed origin/main repository.
+- [x] Preserve existing FastAPI endpoints and valid source/tests.
+- [x] Supported Python, dependency configuration and generated lock; fresh environment installation verified.
+- [x] Application package boundaries and documented Flutter Android/iOS workspace strategy.
+- [x] Development/test/staging/production settings, ignore rules, secret examples and setup guidance.
+- [x] API/worker Docker runtime, Compose PostgreSQL/Redis and local storage emulator.
+- [x] Health/readiness, structured logs and safe error handling with automated tests.
+- [x] Celery foundation, worker ping and actual dispatched-task completion.
+- [x] Reproducible local and independent Ubuntu clean setup/build/service checks.
+- [x] Official real-service suite: 24 passed, zero failures/errors/skipped integration tests.
+- [x] Ruff, formatting, app/runner mypy, Bandit, package consistency, lock and advisory checks passed.
+- [x] GitHub quality/containers jobs passed on main and exact required contexts confirmed.
+- [x] Main requires PRs, strict quality/containers from App 15368, admin enforcement, no force pushes/deletions.
+- [x] Disposable failing PR #1 was BLOCKED, closed unmerged and temporary branch deleted; main unchanged by the test.
+- [x] Authorized local credential reconciliation: only POSTGRES_PASSWORD changed after verification/backup; both credential paths now authenticate.
+- [x] Only API/worker refreshed; PostgreSQL/Redis container identities and data volumes preserved; live /health and /ready pass.
+- [x] Formal acceptance recorded; future changes use the protected PR workflow.
 
-## Next development task
-Review owner decision register BR-01–13 and approve Phase 0 baseline. Local Docker and real-service verification is recorded in Instruction 002. Instruction 005 completed the authorized push and successful Ubuntu CI/clean setup. Establish and test required main-branch protections and record acceptance before marking Phase 1 complete. Then begin Phase 2 with the minimum identity database/migration support from Phase 3, retaining the planned first story-to-catalogue functional slice.
+## Next application delivery
+Implement the prepared Phase 2 identity slice: minimum SQLAlchemy/Alembic users/roles/profile schema, secure registration and verification, then shared web/mobile login/session contracts. Continue with recovery/revocation, RBAC, privileged MFA and authorization tests. Use the existing foundation; no new infrastructure redesign is required.
 
-Latest commands, acceptance matrix and Git/Phase 2 preparation: [Instruction 003 report](../DEVELOPMENT_REPORT_003.md). Prior service verification: [Instruction 002 report](../DEVELOPMENT_REPORT_002.md). Historical implementation: [Instruction 001 report](../DEVELOPMENT_REPORT_001.md).
-
-Phase 2 proposal: [Authentication plan](../architecture/AUTHENTICATION_PLAN.md). Remote prerequisites: [GitHub setup](../development/GITHUB_SETUP.md).
-
-## Windows host integration follow-up
-
-Verified the repaired host runner: 24 tests passed, zero failures and zero skipped integration tests, with PostgreSQL and Redis enabled. IPv6-first localhost attempts caused the previous two-second timeouts; host-only test configuration now loads .env and selects IPv4 loopback on Windows. No application/container configuration or phase acceptance gates changed. See [diagnosis and handover](../LOCAL_INTEGRATION_TESTING.md).
-
-## Instruction 005 — remote CI verification
-
-Committed and pushed repair `ec605fa7aa082c8ed20b79bb400b987387339682` to `vistait2018/ai-movie-platform`, branch main. Windows official runner: 24 passed, no failures/skips. GitHub quality: success, Ubuntu real-service suite 24 passed; containers: success. [Verified run](https://github.com/vistait2018/ai-movie-platform/actions/runs/41126826693). Ruff code-block spacing in report 002 was fixed without excluding docs from formatting. Remaining Phase 1 gate: required branch/check enforcement, including evidence broken changes cannot integrate. Phase 0 approvals remain separate and pending. [Full report](../DEVELOPMENT_REPORT_005.md).
+[Phase 2 implementation sequence](../architecture/AUTHENTICATION_PLAN.md). Flutter Android/iOS remain roadmap deliverables; this next phase implements their shared backend contracts, not the mobile UI.

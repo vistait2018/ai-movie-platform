@@ -10,7 +10,7 @@ Historical Instruction 003 result: `git remote -v` returned no remote. Instructi
 .tools/actionlint-1.7.11/actionlint.exe -shellcheck= -pyflakes= .github/workflows/ci.yml
 ```
 
-No actionlint findings. External ShellCheck/Pyflakes integrations were explicitly disabled because they are not installed; Ruff and mypy cover Python application checks separately. That was local validation only; Instruction 005 subsequently verified actual GitHub job execution. Classic branch protection returned 404 and active main rules returned no entries; enforcement remains outstanding.
+No actionlint findings. External ShellCheck/Pyflakes integrations were explicitly disabled because they are not installed; Ruff and mypy cover Python application checks separately. That was local validation only; Instruction 005 subsequently verified actual GitHub job execution. Instruction 006 subsequently applied the explicitly approved protection and verified the intentionally failing PR #1 was BLOCKED, closed unmerged and cleaned up. Main now requires both checks and PRs, enforces admins and blocks force pushes/deletions.
 
 ## Repository-owner setup checklist — current progress
 1. Choose the GitHub account/organization, repository name and visibility; create an empty repository without generated README/license files that would conflict with this initial history. Confirm permissions and plan support for intended branch protection/rulesets.
@@ -28,7 +28,7 @@ git push -u origin main
 ```
 
 ## Remaining Phase 1 acceptance
-The roadmap requires a documented clean setup, passing automated tests and CI that rejects broken changes. Local tests, isolated same-machine setup and actual Ubuntu remote CI execution are verified. Repository creation/push and the positive workflow-run steps above are complete under Instruction 005. Required-check enforcement/negative-test evidence and protected branch workflow remain blocking gates. Do not label Phase 1 complete based on YAML lint alone.
+The roadmap requires a documented clean setup, passing automated tests and CI that rejects broken changes. Local tests, isolated same-machine setup and actual Ubuntu remote CI execution are verified. Repository creation/push and the positive workflow-run steps above are complete under Instruction 005. Instruction 006 completed required-check enforcement/negative-test evidence and the protected branch workflow. Final authorized local reconciliation also passed; [Phase 1 acceptance](../roadmap/PHASE_1_ACCEPTANCE.md) is recorded. Do not label Phase 1 complete based on YAML lint alone.
 
 ## Sources
 [Official actionlint installation](https://github.com/rhysd/actionlint/blob/main/docs/install.md) and [usage](https://github.com/rhysd/actionlint/blob/main/docs/usage.md). Recheck GitHub repository/ruleset availability for the chosen account and plan when remote setup is authorized.
