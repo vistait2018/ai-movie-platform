@@ -71,3 +71,6 @@ Required regression cases: duplicate email/races, malformed input, correct/incor
 - [RFC 8252 — native apps](https://www.rfc-editor.org/rfc/rfc8252.html)
 
 Opaque first-party session design is this project's proposal; the OAuth RFCs guide refresh-token threat handling and any future OIDC/native integration rather than claiming the current API is an OAuth authorization server.
+
+## Ready-to-implement handover — 31 October 2026
+Phase 1 is accepted after protected-main enforcement and authorized credential reconciliation. Begin actual application delivery with the existing stack. First feature slice: users/roles/profile migration plus secure registration and verification contracts; then login/session behavior shared by responsive web and Flutter Android/iOS clients. Implement and test each slice before expanding, using PRs and existing CI. Do not rebuild infrastructure or introduce live paid providers for these features. This document remains a plan; no authentication implementation is included in the Phase 1 acceptance change.

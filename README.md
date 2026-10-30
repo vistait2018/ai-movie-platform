@@ -1,6 +1,6 @@
 # AI Movie Streaming & Creator Platform
 
-Shared FastAPI foundation for web, Flutter Android and Flutter iOS. Roadmap 4.0 is authoritative; this is not yet a streaming or AI product. See [phase status](docs/roadmap/PHASE_STATUS.md) and [latest development report](docs/DEVELOPMENT_REPORT_005.md).
+Shared FastAPI foundation for web, Flutter Android and Flutter iOS. Roadmap 4.0 is authoritative; this is not yet a streaming or AI product. See [phase status](docs/roadmap/PHASE_STATUS.md) and [latest development report](docs/DEVELOPMENT_REPORT_006.md).
 
 ## Windows setup
 
@@ -86,7 +86,7 @@ The API Docker image intentionally uses `uv sync --no-dev` and excludes tests. `
 
 Configuration uses `APP_` variables, OS environment overriding `.env`. `APP_ENVIRONMENT` accepts development/test/staging/production. Staging and production require explicit password-bearing service URLs and reject known placeholders; provisioning TLS, secret-manager injection and network isolation remain deployment tasks. Secrets are masked in settings and excluded from probe logs. Do not commit `.env`. Logs contain event, request ID, status and duration, without query strings, request payloads or raw exceptions.
 
-GitHub CI is now verified for repair commit `ec605fa7aa082c8ed20b79bb400b987387339682`: [quality and containers both passed](https://github.com/vistait2018/ai-movie-platform/actions/runs/41126826693). Required branch protection/enforcement is still outstanding. Branch protections require a remote repository and owner configuration. The initial foundation commit is recorded by Instruction 003; inspect `git log -1` for its SHA. Remote setup and pushing still require authorization. See [GitHub setup gates](docs/development/GITHUB_SETUP.md) and the [proposed Phase 2 authentication plan](docs/architecture/AUTHENTICATION_PLAN.md). Mobile workspace strategy is documented in the architecture decisions; no Flutter app is claimed implemented.
+GitHub CI is now verified for repair commit `ec605fa7aa082c8ed20b79bb400b987387339682`: [quality and containers both passed](https://github.com/vistait2018/ai-movie-platform/actions/runs/41126826693). Main branch protection and failing-PR enforcement are now verified; [Phase 1 is formally accepted](docs/roadmap/PHASE_1_ACCEPTANCE.md). Branch protections require a remote repository and owner configuration. The initial foundation commit is recorded by Instruction 003; inspect `git log -1` for its SHA. Remote setup and pushing still require authorization. See [GitHub setup gates](docs/development/GITHUB_SETUP.md) and the [proposed Phase 2 authentication plan](docs/architecture/AUTHENTICATION_PLAN.md). Mobile workspace strategy is documented in the architecture decisions; no Flutter app is claimed implemented.
 
 ## Troubleshooting
 
