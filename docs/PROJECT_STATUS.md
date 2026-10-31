@@ -11,3 +11,7 @@ Final official suite: 24 passed, zero failures/errors/skipped integration tests.
 Phase 0 product/commercial owner decisions remain pending separately. Phase 2 is next: implement the minimum identity schema and registration/verification feature, then shared web/mobile sessions, recovery, permissions and privileged MFA using the [existing plan](architecture/AUTHENTICATION_PLAN.md). No authentication, AI filmmaking, streaming, financial or mobile UI feature is claimed implemented yet. No infrastructure redesign is needed before these application features.
 
 No credentials, local .env/backups, environments or caches are committed. The unrelated empty New Text Document.txt is preserved. No live finance, paid AI call or production deployment occurred.
+
+## Instruction 007 — functional Increment 1
+
+Phase 1 remains accepted. Phase 2 is now in progress: additive identity schema and pending Viewer registration are implemented, migrated locally and available at /api/v1/auth/register in Docker Swagger. Expanded suite: 45 passed locally, preserving the original 24 tests. No login/token/verification-delivery/admin feature is claimed yet. [Report 007](DEVELOPMENT_REPORT_007.md) and [owner test guide](development/REGISTRATION.md). Next is Increment 2 login/session issuance/current-user APIs.

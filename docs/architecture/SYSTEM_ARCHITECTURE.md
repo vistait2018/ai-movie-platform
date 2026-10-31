@@ -34,3 +34,7 @@ Development Compose: API, worker, PostgreSQL, Redis; optional local S3 emulation
 
 ## Operations
 `/health` retains original liveness behavior; `/live` is explicit process liveness. `/ready` requires database SELECT 1 and Redis PING within a bounded concurrent timeout; it does not promise worker capacity, schema migration readiness or storage availability yet. Request logs use generated IDs and sanitized JSON events. Metrics, traces, alerts, durable job state, backups and recovery rehearsals remain later work.
+
+## Phase 2 Increment 1 implemented
+
+app/db now owns the SQLAlchemy engine/session boundary; app/models/identity.py and additive Alembic revision 0001_identity_core persist users, extensible roles/permissions and registration audit events. app/api/auth.py exposes pending Viewer registration backed by app/services/registration.py. Passwords use pwdlib Argon2id; Redis provides an atomic bounded registration guard. Verification, login, sessions and administrative APIs remain later increments. No full authentication system is claimed yet.

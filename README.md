@@ -95,3 +95,7 @@ GitHub CI is now verified for repair commit `ec605fa7aa082c8ed20b79bb400b9873873
 - Docker registry DNS lookup errors: check `Resolve-DnsName registry-1.docker.io`, `production.cloudfront.docker.com`, `ghcr.io` and `pkg-containers.githubusercontent.com`; transient errors recovered during Instruction 002 after successful host lookups and build retries. Do not rewrite the Dockerfile or weaken TLS to work around a network lookup failure.
 - Readiness 503: check service URLs and `docker compose ps`/logs; database/cache absence does not affect liveness.
 - Existing `.pytest_cache` cannot be read in the audited session; pytest now uses `.test-cache` and the old directory is ignored.
+
+## Phase 2 Increment 1 — registration
+
+`POST /api/v1/auth/register` now persists pending Viewer accounts with Argon2id passwords, atomic uniqueness/role/audit handling and a Redis abuse guard. See the [Swagger walkthrough and migration instructions](docs/development/REGISTRATION.md). Apply `alembic upgrade head` before registration. Login, verification delivery/confirmation, recovery and session endpoints are not yet implemented; Phase 2 remains in progress.
