@@ -1,6 +1,6 @@
 # Authentication — Phase 2 Increment 2
 
-Official Roadmap 4.0 unchanged. Shared FastAPI contract for web, Flutter Android and Flutter iOS. Phase 2 remains incomplete.
+Official Roadmap 4.0 unchanged. Shared FastAPI contract for web, Flutter Android and Flutter iOS. Phase 2 remains incomplete. Increment 3 now adds [email verification and password recovery](EMAIL_VERIFICATION_RECOVERY.md); the original access contract below is preserved.
 
 ## Delivered API contract
 
@@ -68,6 +68,6 @@ Use /docs to login, Swagger Authorize with the returned access, then /me. Never 
 
 Official real-service tests: `.\.venv-dev\Scripts\python.exe scripts/run_tests.py`. Tests create/drop only unique disposable databases and remove only their unique Redis keys. Migration round-trip/downgrade is isolated; never downgrade the live development database for a test.
 
-Not implemented: refresh issuance/rotation, logout/revoke APIs, browser cookie/CSRF adapter, production email verification, recovery, MFA, device/session management or full RBAC. Privileged MFA is still mandatory for production phase acceptance; no production authentication acceptance is claimed. /me roles are descriptive; future actions must enforce permissions/ownership separately.
+Not implemented: refresh issuance/rotation, logout/revoke APIs, browser cookie/CSRF adapter, real-provider delivery, MFA, device/session management or full RBAC. Privileged MFA is still mandatory for production phase acceptance; no production authentication acceptance is claimed. /me roles are descriptive; future actions must enforce permissions/ownership separately.
 
 Reference: [PyJWT strict decoding and required claims](https://pyjwt.readthedocs.io/en/stable/api.html). Instruction 008's signed-token decision is recorded in the authentication plan.

@@ -5,14 +5,14 @@ Updated: 31 October 2026 (Africa/Lagos). Official Roadmap Version 4.0 is unchang
 ## Current acceptance
 **Phase 1 is complete and formally accepted.** All mandatory development-foundation requirements have verified evidence, including real CI, protected-main enforcement, clean setup and current local service readiness. [Formal acceptance](PHASE_1_ACCEPTANCE.md), [report 006](../DEVELOPMENT_REPORT_006.md), [CI report 005](../DEVELOPMENT_REPORT_005.md).
 
-Phase 0 commercial/product owner decisions remain pending separately. Phase 2 Increments 1 and 2 implement pending registration, verified-active login and signed bearer access to /me. Full authentication remains incomplete.
+Phase 0 commercial/product owner decisions remain pending separately. Phase 2 Increments 1–3 implement registration, signed access login/me, email verification and password reset with encrypted durable development delivery. Full authentication remains incomplete.
 
 | Phase | Status | Evidence / remaining gate |
 | --- | --- | --- |
 | 0 | Documentation prepared; approval pending | PRD, MVP scope, business rules, roles, architecture, preliminary database design, decisions, risks and roadmap written to the working tree. BR-01–13 and proposed service targets await owner decisions. |
 | 1 | **Complete — accepted 31 October 2026** | Local and independent Ubuntu setup/CI verified; protected main enforcement proven; credential sources reconciled with authorization; live API/worker healthy; 24 tests passed, quality/security checks passed, data preserved. See PHASE_1_ACCEPTANCE.md and report 006. |
-| 2 | In progress — Increment 2 implemented and CI verified | Registration preserved; verified-active login, revocable signed access and authenticated /me implemented. Production verification/recovery, refresh/logout, full RBAC, MFA and acceptance remain incomplete. |
-| 3 | Identity subset implemented for Phase 2 | Additive 0001_identity_core applied locally; full financial/media/business schema remains unimplemented. |
+| 2 | In progress — Increment 3 locally verified; CI pending | Verification/reset actions, encrypted durable development outbox and grant revocation added. Real email provider, refresh/logout, full RBAC, MFA and phase acceptance remain incomplete. |
+| 3 | Identity subset implemented for Phase 2 | Additive identity migrations 0001–0003 applied locally; full financial/media/business schema remains unimplemented. |
 | 4 | Not started | Catalogue/content APIs and publishing absent. |
 | 5 | Not started | Super Admin/finance dashboards and workflows absent. |
 | 6 | Not started | AI story adapter/generation/persistence absent. |
@@ -61,7 +61,7 @@ Phase 0 commercial/product owner decisions remain pending separately. Phase 2 In
 - [x] Formal acceptance recorded; future changes use the protected PR workflow.
 
 ## Next application delivery
-Registration and signed-access login/current-user authentication are implemented. Next implement production email-verification actions and mocked durable delivery, then recovery, refresh/logout, RBAC and privileged MFA with authorization tests. Use the existing foundation; no new infrastructure redesign is required.
+Registration and signed-access login/current-user authentication are implemented. Verification/reset actions with durable development delivery are implemented. Next deliver refresh/logout, RBAC and privileged MFA with authorization tests; integrate real email delivery before production use. Use the existing foundation; no new infrastructure redesign is required.
 
 [Phase 2 implementation sequence](../architecture/AUTHENTICATION_PLAN.md). Flutter Android/iOS remain roadmap deliverables; this next phase implements their shared backend contracts, not the mobile UI.
 
@@ -76,3 +76,7 @@ Increment 1 feature commit `c854776b9b60dadb718cfea9ffa6720f24eacf6a` is open fo
 Signed access login and reusable current-user authentication implemented on codex/phase2-login-authentication, stacked over unmerged Increment 1 PR #3. Additive 0002_access_grants; pending/suspended accounts remain blocked. Shared web/Flutter bearer contract and guarded local verification fixture documented. Full session management, refresh rotation, logout and production email verification are not claimed. See [report 008](../DEVELOPMENT_REPORT_008.md) for actual checks and PR evidence. Earlier sections retain historical evidence.
 
 Increment 2 Windows suite: **86 passed**, zero skipped integrations. [PR #4](https://github.com/vistait2018/ai-movie-platform/pull/4) is open, stacked on PR #3; [workflow 41194733414](https://github.com/vistait2018/ai-movie-platform/actions/runs/41194733414) confirms quality and containers passed at 41c98adc2a4418428a75ce362f97461708000ac6. Remaining Phase 2 requirements above still apply; no phase completion or production acceptance is claimed.
+
+## Instruction 009 — Increment 3
+
+Local official suite: **122 passed**, preserving all 86 existing tests; zero skipped integrations. Full Docker HTTP/CLI walkthrough passed including verification, reset, old-password rejection and grant revocation. 0003 is additive, data preserved. PR #3 and #4 remain unmerged; this increment stacks on #4 and must follow foundation-first merge order. [Report 009](../DEVELOPMENT_REPORT_009.md) and [Swagger walkthrough](../development/EMAIL_VERIFICATION_RECOVERY.md). Phase 2 remains incomplete.

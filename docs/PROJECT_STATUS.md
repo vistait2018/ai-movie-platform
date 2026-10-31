@@ -21,3 +21,7 @@ Current review: [PR #3](https://github.com/vistait2018/ai-movie-platform/pull/3)
 ## Current increment — Instruction 008
 
 Phase 2 Increment 2 adds verified-active login, short-lived signed bearer access, database-backed grant revocation/account restrictions and protected /me. Registration remains pending by default. Browser/Flutter contracts and safe local fixture preparation are in [AUTHENTICATION.md](development/AUTHENTICATION.md). Production email verification, refresh/logout, recovery, MFA and full RBAC remain incomplete. Current evidence is in [report 008](DEVELOPMENT_REPORT_008.md); earlier sections record historical results. Roadmap 4.0 unchanged.
+
+## Current increment — Instruction 009
+
+Phase 2 Increment 3 implements expiring single-use verification/reset workflows, atomic account/audit/grant changes and encrypted PostgreSQL development outbox with restricted CLI inspection. Local suite: 122 passed, no skipped integrations. Registration/login/me remain functional. [Practical Swagger guide](development/EMAIL_VERIFICATION_RECOVERY.md), [report 009](DEVELOPMENT_REPORT_009.md). Real-provider delivery, refresh/logout, cookie/CSRF sessions, MFA, full RBAC and Phase 2 acceptance remain incomplete. Roadmap 4.0 unchanged. Earlier sections retain historical evidence.

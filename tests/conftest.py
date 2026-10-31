@@ -57,6 +57,8 @@ def service_settings(pytestconfig):
 
 @pytest.fixture(autouse=True)
 def isolated_settings(monkeypatch):
+    from cryptography.fernet import Fernet
+
     # Unit tests never inherit an operator's local service credentials or environment.
     for key in (
         "APP_DATABASE_URL",
@@ -68,9 +70,16 @@ def isolated_settings(monkeypatch):
         "APP_ACCESS_TOKEN_AUDIENCE",
         "APP_LOGIN_REQUESTS_PER_WINDOW",
         "APP_LOGIN_WINDOW_SECONDS",
+        "APP_VERIFICATION_SECONDS",
+        "APP_PASSWORD_RESET_SECONDS",
+        "APP_ACTION_RESEND_SECONDS",
+        "APP_ACTION_REQUESTS_PER_WINDOW",
+        "APP_ACTION_CONFIRMATIONS_PER_WINDOW",
+        "APP_ACTION_WINDOW_SECONDS",
     ):
         monkeypatch.delenv(key, raising=False)
     monkeypatch.setenv("APP_ENVIRONMENT", "test")
+    monkeypatch.setenv("APP_EMAIL_OUTBOX_KEY", Fernet.generate_key().decode())
     get_settings.cache_clear()
     app.dependency_overrides.clear()
     yield

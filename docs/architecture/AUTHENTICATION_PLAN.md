@@ -6,6 +6,10 @@ Roadmap 4.0 · Instruction 003 · 30 October 2026. **Proposed design only; no au
 
 The owner explicitly requires signed access tokens. Increment 2 supersedes the original opaque-access proposal for the delivered access slice: PyJWT HS256, configurable 10-minute lifetime, strict claims and PostgreSQL access_grants for immediate revocation/account-state checks. Refresh and full browser cookie sessions remain proposed. Both current web and Flutter clients use bearer headers with access held in memory; cookies never authenticate. The future cookie adapter must implement CSRF/origin requirements before use. A guarded local fixture verifier does not implement production email verification. See [implemented contract](../development/AUTHENTICATION.md). The original proposal below describes future work where not superseded here.
 
+## Instruction 009 implemented increment
+
+Verification/reset use purpose-bound SHA-256 digests of random 256-bit single-use credentials, user/action row locks, recipient snapshots, expiry and atomic audit/account/grant changes. Additive 0003_auth_actions_outbox stores actions plus Fernet-encrypted durable development delivery. EmailDelivery.enqueue is the transaction-bound adapter seam; no provider network send occurs inside authentication transactions. Local inspection requires an acknowledged development CLI and local database; no HTTP outbox endpoint exists. Development delivery refuses staging/production, which fail closed until a real adapter is integrated. [Working endpoints and Swagger walkthrough](../development/EMAIL_VERIFICATION_RECOVERY.md). Refresh/logout, cookie/CSRF sessions, MFA and full RBAC remain future work.
+
 ## Architecture proposal
 One FastAPI identity/authorization service with PostgreSQL as authority. Use first-party stateful sessions and opaque random credentials rather than implementing a custom OAuth authorization server. API, web route handlers and background services share authorization/ownership checks. Redis supplies bounded rate-limit counters, not the only source of account/session revocation truth.
 
