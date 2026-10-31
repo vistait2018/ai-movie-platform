@@ -104,7 +104,7 @@ def test_deployed_settings_reject_placeholder_passwords():
     with pytest.raises(ValidationError):
         settings(
             environment="production",
-            database_url="postgresql://movie:replace-local-password@db/movie",
+            database_url="postgresql://movie:replace-example-password-before-use@db/movie",
             redis_url="redis://:secret@cache/0",
         )
     assert configured(environment="production").environment == "production"

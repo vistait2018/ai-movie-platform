@@ -136,7 +136,7 @@ finally:
 ```powershell
 $env:RUN_SERVICE_TESTS = '1'
 $env:APP_ENVIRONMENT = 'test'
-$env:APP_DATABASE_URL = 'postgresql://movie:replace-local-password@127.0.0.1:5432/movie'
+$env:APP_DATABASE_URL = 'postgresql://movie:replace-example-password-before-use@127.0.0.1:5432/movie'
 $env:APP_REDIS_URL = 'redis://127.0.0.1:6379/0'
 $pytestTemp = ".tools/pytest-002-host-$PID"
 if (Test-Path $pytestTemp) { throw 'Refusing to reuse existing pytest temporary directory' }

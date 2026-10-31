@@ -2,6 +2,10 @@
 
 Roadmap 4.0 · Instruction 003 · 30 October 2026. **Proposed design only; no authentication code, schema, migration or dependency added by this instruction.** Shared web, Flutter Android and Flutter iOS scope is preserved. Review technical choices before implementation; outstanding Phase 0 commercial decisions remain separate.
 
+## Instruction 008 decision — 31 October 2026
+
+The owner explicitly requires signed access tokens. Increment 2 supersedes the original opaque-access proposal for the delivered access slice: PyJWT HS256, configurable 10-minute lifetime, strict claims and PostgreSQL access_grants for immediate revocation/account-state checks. Refresh and full browser cookie sessions remain proposed. Both current web and Flutter clients use bearer headers with access held in memory; cookies never authenticate. The future cookie adapter must implement CSRF/origin requirements before use. A guarded local fixture verifier does not implement production email verification. See [implemented contract](../development/AUTHENTICATION.md). The original proposal below describes future work where not superseded here.
+
 ## Architecture proposal
 One FastAPI identity/authorization service with PostgreSQL as authority. Use first-party stateful sessions and opaque random credentials rather than implementing a custom OAuth authorization server. API, web route handlers and background services share authorization/ownership checks. Redis supplies bounded rate-limit counters, not the only source of account/session revocation truth.
 
