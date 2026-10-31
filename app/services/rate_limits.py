@@ -7,6 +7,7 @@ from redis import Redis
 from redis.exceptions import RedisError
 
 from app.core.settings import Settings, get_settings
+from app.schemas.auth import LoginRequest
 
 _COUNTER = """
 local count = redis.call('INCR', KEYS[1])
@@ -44,3 +45,30 @@ def limit_registration(
             detail="Too many registration requests",
             headers={"Retry-After": str(settings.registration_window_seconds)},
         )
+
+
+def limit_login(
+    payload: LoginRequest,
+    request: Request,
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> None:
+    address = request.client.host if request.client else "unknown"
+    try:
+        client = get_registration_redis()
+        # Separate IP and account limits: distributed guessing and IP account spraying are bounded.
+        for kind, value in (("ip", address), ("account", str(payload.email))):
+            key = "auth:login:" + kind + ":" + sha256(value.encode()).hexdigest()
+            count = client.eval(_COUNTER, 1, key, str(settings.login_window_seconds))
+            if not isinstance(count, int):
+                raise RuntimeError("Unexpected rate limit response")
+            if count > settings.login_requests_per_window:
+                import logging
+
+                logging.getLogger("movie.auth").info("login_rate_limited")
+                raise HTTPException(
+                    429,
+                    "Too many login requests",
+                    headers={"Retry-After": str(settings.login_window_seconds)},
+                )
+    except (RedisError, RuntimeError):
+        raise HTTPException(503, "Authentication temporarily unavailable") from None

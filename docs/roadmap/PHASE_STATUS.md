@@ -5,13 +5,13 @@ Updated: 31 October 2026 (Africa/Lagos). Official Roadmap Version 4.0 is unchang
 ## Current acceptance
 **Phase 1 is complete and formally accepted.** All mandatory development-foundation requirements have verified evidence, including real CI, protected-main enforcement, clean setup and current local service readiness. [Formal acceptance](PHASE_1_ACCEPTANCE.md), [report 006](../DEVELOPMENT_REPORT_006.md), [CI report 005](../DEVELOPMENT_REPORT_005.md).
 
-Phase 0 commercial/product owner decisions remain pending separately. Phase 2 Increment 1 is implemented: persistent pending Viewer registration with identity migration, Argon2id hashing and tests. Full authentication remains incomplete.
+Phase 0 commercial/product owner decisions remain pending separately. Phase 2 Increments 1 and 2 implement pending registration, verified-active login and signed bearer access to /me. Full authentication remains incomplete.
 
 | Phase | Status | Evidence / remaining gate |
 | --- | --- | --- |
 | 0 | Documentation prepared; approval pending | PRD, MVP scope, business rules, roles, architecture, preliminary database design, decisions, risks and roadmap written to the working tree. BR-01–13 and proposed service targets await owner decisions. |
 | 1 | **Complete — accepted 31 October 2026** | Local and independent Ubuntu setup/CI verified; protected main enforcement proven; credential sources reconciled with authorization; live API/worker healthy; 24 tests passed, quality/security checks passed, data preserved. See PHASE_1_ACCEPTANCE.md and report 006. |
-| 2 | In progress — Increment 1 implemented | Identity migration/models, secure pending Viewer registration, hashing, atomic duplicate handling, audit and abuse guard implemented/tested. Login, verification/recovery, sessions, RBAC enforcement/admin APIs and acceptance remain future increments. |
+| 2 | In progress — Increment 2 implemented; CI verification pending | Registration preserved; verified-active login, revocable signed access and authenticated /me implemented. Production verification/recovery, refresh/logout, full RBAC, MFA and acceptance remain incomplete. |
 | 3 | Identity subset implemented for Phase 2 | Additive 0001_identity_core applied locally; full financial/media/business schema remains unimplemented. |
 | 4 | Not started | Catalogue/content APIs and publishing absent. |
 | 5 | Not started | Super Admin/finance dashboards and workflows absent. |
@@ -61,7 +61,7 @@ Phase 0 commercial/product owner decisions remain pending separately. Phase 2 In
 - [x] Formal acceptance recorded; future changes use the protected PR workflow.
 
 ## Next application delivery
-Implement the prepared Phase 2 identity slice: minimum SQLAlchemy/Alembic users/roles/profile schema, secure registration and verification, then shared web/mobile login/session contracts. Continue with recovery/revocation, RBAC, privileged MFA and authorization tests. Use the existing foundation; no new infrastructure redesign is required.
+Registration and signed-access login/current-user authentication are implemented. Next implement production email-verification actions and mocked durable delivery, then recovery, refresh/logout, RBAC and privileged MFA with authorization tests. Use the existing foundation; no new infrastructure redesign is required.
 
 [Phase 2 implementation sequence](../architecture/AUTHENTICATION_PLAN.md). Flutter Android/iOS remain roadmap deliverables; this next phase implements their shared backend contracts, not the mobile UI.
 
@@ -70,3 +70,7 @@ Implement the prepared Phase 2 identity slice: minimum SQLAlchemy/Alembic users/
 Implemented POST /api/v1/auth/register and additive PostgreSQL identity schema on the Phase 2 feature branch. Original 24 tests preserved; expanded suite 45 passed locally. Runtime Swagger registration smoke passed. Phase 2 is not complete; next Increment 2 delivers login, token issuance and protected current-user behavior. See report 007 and development/REGISTRATION.md for scope and exact results.
 
 Increment 1 feature commit `c854776b9b60dadb718cfea9ffa6720f24eacf6a` is open for review in [PR #3](https://github.com/vistait2018/ai-movie-platform/pull/3); [required CI checks](https://github.com/vistait2018/ai-movie-platform/actions/runs/41193643965) both passed, including canonical Docker migrations. Increment 1 is delivered; full Phase 2 remains incomplete.
+
+## Instruction 008 — Increment 2
+
+Signed access login and reusable current-user authentication implemented on codex/phase2-login-authentication, stacked over unmerged Increment 1 PR #3. Additive 0002_access_grants; pending/suspended accounts remain blocked. Shared web/Flutter bearer contract and guarded local verification fixture documented. Full session management, refresh rotation, logout and production email verification are not claimed. See [report 008](../DEVELOPMENT_REPORT_008.md) for actual checks and PR evidence. Earlier sections retain historical evidence.

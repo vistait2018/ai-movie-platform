@@ -18,6 +18,12 @@ class Settings(BaseSettings):
 
     registration_requests_per_window: int = Field(default=10, ge=1, le=1000)
     registration_window_seconds: int = Field(default=60, ge=1, le=3600)
+    access_signing_key: SecretStr | None = None
+    access_token_seconds: int = Field(default=600, ge=60, le=3600)
+    access_token_issuer: str = Field(default="ai-movie-platform", min_length=1, max_length=200)
+    access_token_audience: str = Field(default="ai-movie-clients", min_length=1, max_length=200)
+    login_requests_per_window: int = Field(default=10, ge=1, le=1000)
+    login_window_seconds: int = Field(default=60, ge=1, le=3600)
 
     @model_validator(mode="after")
     def validate_services(self) -> "Settings":
