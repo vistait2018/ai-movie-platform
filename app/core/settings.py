@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     redis_url: SecretStr | None = None
     readiness_timeout_seconds: float = Field(default=2, ge=0.1, le=10)
 
+    registration_requests_per_window: int = Field(default=10, ge=1, le=1000)
+    registration_window_seconds: int = Field(default=60, ge=1, le=3600)
+
     @model_validator(mode="after")
     def validate_services(self) -> "Settings":
         for name, secret, schemes in (

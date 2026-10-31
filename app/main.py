@@ -6,10 +6,13 @@ from typing import Annotated
 from uuid import uuid4
 
 from fastapi import Depends, FastAPI, Request, Response
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from app.api.auth import router as auth_router
 from app.core.logging import configure_logging
 from app.core.settings import Settings, get_settings
+from app.db.session import DatabaseUnavailable
 from app.services.readiness import check_readiness
 
 logger = logging.getLogger("movie.api")
@@ -82,3 +85,26 @@ async def request_logging(
         },
     )
     return response
+
+
+app.include_router(auth_router)
+
+
+@app.exception_handler(RequestValidationError)
+async def sanitized_validation(request: Request, error: RequestValidationError) -> JSONResponse:
+    # Pydantic's default error input can include passwords; omit it and context entirely.
+    return JSONResponse(
+        status_code=422,
+        content={
+            "detail": [
+                {"loc": item["loc"], "msg": item["msg"], "type": item["type"]}
+                for item in error.errors()
+            ]
+        },
+    )
+
+
+@app.exception_handler(DatabaseUnavailable)
+async def unavailable_database(request: Request, error: DatabaseUnavailable) -> JSONResponse:
+    logger.warning("registration_unavailable", extra={"error_type": type(error).__name__})
+    return JSONResponse(status_code=503, content={"detail": "Registration temporarily unavailable"})
