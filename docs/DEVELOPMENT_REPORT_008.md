@@ -22,7 +22,7 @@ This is access authentication only. No refresh rotation, logout/revoke API, prod
 - Canonical Dockerfile build succeeded for API/worker; both refreshed using --no-deps --no-build. Live Alembic current: 0002_access_grants (head); check: No new upgrade operations detected.
 - Live Docker HTTP smoke: /health and /ready 200; registration 202; pending login 401; explicitly prepared local verified login and /me 200; missing/revoked access 401; Swagger HTTPBearer schema present. Password/token generated only in memory, never displayed or saved. One local smoke account retained with its grant revoked.
 - All five containers healthy. PostgreSQL ID 337d44f5482f and Redis ID 746130f84b28 unchanged. Redis PONG; Celery inspect ping reported one node online. No PostgreSQL/Redis volume deletion/reset/recreation.
-- Before additive live migration: PostgreSQL custom-format dump saved under ignored .tools/before-auth008.dump; pg_restore --list succeeded. Before adding the local signing key, .env was backed up under ignored .tools; existing credentials unchanged. Only APP_ACCESS_SIGNING_KEY was added. No credentials are included in source/report output.
+- Before additive live migration: PostgreSQL custom-format dump saved under ignored .tools/before-auth008.dump; pg_restore --list succeeded. Before adding the local signing key, .env was backed up under ignored .tools; existing credentials unchanged. Only APP_ACCESS_SIGNING_KEY was added. The generated signing key is excluded from source/report output. A pre-existing local database/example password match is documented below.
 
 ## Inspected and changed files
 
@@ -66,3 +66,7 @@ Docker commands used the installed per-user Docker executable with approved acce
 Increment 1 PR #3 was still open at implementation start. This increment is stacked on that branch, preserving valid registration work. No direct main push, force push, merge, production deployment, paid AI request or financial transaction. Commit/PR and required-check evidence are recorded below after GitHub verification.
 
 Next application task: production email-verification actions and durable mocked delivery, followed by recovery, refresh/logout and authorization/MFA increments. Keep pending accounts blocked and preserve the current signed-access contract. Full Phase 2 acceptance remains outstanding.
+
+## Credential review correction
+
+The exact-value scan detected that the existing local PostgreSQL password matches the pre-existing committed .env.example value (confirmed against the parent revision). A command-handling error allowed the first feature commit to proceed after that failed scan. Corrected the current example and two pre-existing documentation/test sample occurrences to a distinct explicit placeholder and enforced scan failure handling before further pushes. The new signing key was never committed/displayed. Local database credentials were not changed and volumes remain intact. Earlier public history still contains the old example; owner-authorized local password rotation is recommended separately. No history rewrite was performed.
