@@ -47,3 +47,7 @@ The migration seeds Viewer, Creator, Admin and Super Admin plus the roadmap's Mo
 The full suite preserves the initial 24 tests and adds registration, migration consistency/round-trip, hashing, rollback, concurrency, privilege-input and Redis guard tests. Fixtures create and delete only unique movie_auth_test_* databases and one unique Redis key; no existing data store is reset. CI runs real PostgreSQL/Redis and also migrates/checks the lean Docker runtime. pytest is intentionally not installed in that image.
 
 Primary references: [SQLAlchemy PostgreSQL conflict handling](https://docs.sqlalchemy.org/en/20/dialects/postgresql.html), [Alembic connection sharing](https://alembic.sqlalchemy.org/en/latest/cookbook.html), [pwdlib](https://frankie567.github.io/pwdlib/reference/pwdlib/), [OWASP authentication](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html).
+
+## Increment 3 update
+
+New registrations now atomically queue an expiring single-use verification action and encrypted durable development message. Existing generic 202/pending Viewer/login restrictions remain. Use [the verification and recovery walkthrough](EMAIL_VERIFICATION_RECOVERY.md), rather than the old development activation shortcut, to test the full workflow. A separately generated local outbox key is required; real-provider production delivery remains unconfigured.

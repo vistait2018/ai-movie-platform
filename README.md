@@ -103,3 +103,7 @@ GitHub CI is now verified for repair commit `ec605fa7aa082c8ed20b79bb400b9873873
 ### Phase 2 access authentication
 
 `POST /api/v1/auth/login` authenticates verified active users; `GET /api/v1/auth/me` accepts the returned short-lived bearer token. Registration stays pending. Configure a generated signing key and use the guarded local fixture command in [the authentication guide](docs/development/AUTHENTICATION.md). Refresh/logout and production email verification are not implemented yet.
+
+### Verify email and recover a password
+
+Increment 3 adds `/api/v1/auth/request-verification`, `/verify-email`, `/forgot-password` and `/reset-password`. New registrations queue encrypted durable development messages. Follow [the eight-step Swagger walkthrough](docs/development/EMAIL_VERIFICATION_RECOVERY.md) to retrieve messages through the restricted local CLI, verify, log in and reset a password. No paid provider or public outbox viewer is used.

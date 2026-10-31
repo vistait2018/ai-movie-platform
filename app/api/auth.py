@@ -19,6 +19,7 @@ from app.schemas.auth import (
     RegistrationResponse,
 )
 from app.services.authentication import authenticate
+from app.services.email_delivery import DeliveryUnavailable
 from app.services.rate_limits import limit_login, limit_registration
 from app.services.registration import register_user
 
@@ -34,7 +35,7 @@ logger = logging.getLogger("movie.auth")
     summary="Request a pending Viewer account",
     description=(
         "Creates a pending, unverified Viewer account. Existing emails receive the same response. "
-        "No login/session is issued. Verification delivery/confirmation follows in Increment 3."
+        "No login/session is issued. A verification message is queued atomically for new accounts."
     ),
     responses={
         422: {"description": "Invalid input (sensitive values omitted)"},
@@ -43,11 +44,13 @@ logger = logging.getLogger("movie.auth")
     },
 )
 def register(
-    payload: RegistrationRequest, session: Annotated[Session, Depends(get_db_session)]
+    payload: RegistrationRequest,
+    session: Annotated[Session, Depends(get_db_session)],
+    settings: Annotated[Settings, Depends(get_settings)],
 ) -> RegistrationResponse:
     try:
-        register_user(session, payload)
-    except (SQLAlchemyError, DatabaseUnavailable) as error:
+        register_user(session, payload, settings)
+    except (SQLAlchemyError, DatabaseUnavailable, DeliveryUnavailable) as error:
         logger.warning("registration_unavailable", extra={"error_type": type(error).__name__})
         raise HTTPException(
             status_code=503, detail="Registration temporarily unavailable"
@@ -61,7 +64,7 @@ def register(
     dependencies=[Depends(limit_login)],
     summary="Authenticate a verified active user",
     description="JSON credentials for web and Flutter. Returns an access bearer token only; "
-    "no refresh token, cookie session, logout or email verification is provided.",
+    "no refresh token, cookie session or logout is provided.",
     responses={
         401: {"description": "Invalid credentials or account not eligible"},
         429: {"description": "Login limit exceeded"},

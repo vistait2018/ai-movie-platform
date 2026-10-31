@@ -8,7 +8,7 @@ Verified foundation includes Python 3.12.14/locked dependencies, Docker/Compose,
 
 Final official suite: 24 passed, zero failures/errors/skipped integration tests. Ruff, format, mypy, Bandit, package consistency, lock and advisory checks pass. GitHub quality/containers passed; deliberate failing PR #1 was blocked, closed unmerged and its branch deleted. Future changes must pass the protected PR workflow.
 
-Phase 0 product/commercial decisions remain pending separately. Phase 2 Increments 1 and 2 implement pending Viewer registration plus verified-active login and signed access to /me. Current local suite: 86 passed with real PostgreSQL/Redis. Production email verification, recovery, refresh/logout, MFA, full RBAC and Phase 2 acceptance remain incomplete. AI/movie/streaming/finance/mobile UI features remain unimplemented. See report 008 for current CI evidence.
+Phase 0 product/commercial decisions remain pending separately. Phase 2 Increments 1–3 implement registration, login/me, email verification and password recovery with encrypted durable development delivery. Current local suite: 122 passed with real PostgreSQL/Redis; required GitHub jobs passed. Real email provider, refresh/logout, MFA, full RBAC and Phase 2 acceptance remain incomplete. AI/movie/streaming/finance/mobile UI features remain unimplemented. See report 008 for current CI evidence.
 
 No credentials, local .env/backups, environments or caches are committed. The unrelated empty New Text Document.txt is preserved. No live finance, paid AI call or production deployment occurred.
 
@@ -21,3 +21,7 @@ Current review: [PR #3](https://github.com/vistait2018/ai-movie-platform/pull/3)
 ## Current increment — Instruction 008
 
 Phase 2 Increment 2 adds verified-active login, short-lived signed bearer access, database-backed grant revocation/account restrictions and protected /me. Registration remains pending by default. Browser/Flutter contracts and safe local fixture preparation are in [AUTHENTICATION.md](development/AUTHENTICATION.md). Production email verification, refresh/logout, recovery, MFA and full RBAC remain incomplete. Current evidence is in [report 008](DEVELOPMENT_REPORT_008.md); earlier sections record historical results. Roadmap 4.0 unchanged.
+
+## Current increment — Instruction 009
+
+Phase 2 Increment 3 implements expiring single-use verification/reset workflows, atomic account/audit/grant changes and encrypted PostgreSQL development outbox with restricted CLI inspection. Local suite: 122 passed, no skipped integrations. Registration/login/me remain functional. [Practical Swagger guide](development/EMAIL_VERIFICATION_RECOVERY.md), [report 009](DEVELOPMENT_REPORT_009.md). Real-provider delivery, refresh/logout, cookie/CSRF sessions, MFA, full RBAC and Phase 2 acceptance remain incomplete. Roadmap 4.0 unchanged. Earlier sections retain historical evidence.
