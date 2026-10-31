@@ -11,7 +11,7 @@ Phase 0 commercial/product owner decisions remain pending separately. Phase 2 In
 | --- | --- | --- |
 | 0 | Documentation prepared; approval pending | PRD, MVP scope, business rules, roles, architecture, preliminary database design, decisions, risks and roadmap written to the working tree. BR-01–13 and proposed service targets await owner decisions. |
 | 1 | **Complete — accepted 31 October 2026** | Local and independent Ubuntu setup/CI verified; protected main enforcement proven; credential sources reconciled with authorization; live API/worker healthy; 24 tests passed, quality/security checks passed, data preserved. See PHASE_1_ACCEPTANCE.md and report 006. |
-| 2 | In progress — Increment 2 implemented; CI verification pending | Registration preserved; verified-active login, revocable signed access and authenticated /me implemented. Production verification/recovery, refresh/logout, full RBAC, MFA and acceptance remain incomplete. |
+| 2 | In progress — Increment 2 implemented and CI verified | Registration preserved; verified-active login, revocable signed access and authenticated /me implemented. Production verification/recovery, refresh/logout, full RBAC, MFA and acceptance remain incomplete. |
 | 3 | Identity subset implemented for Phase 2 | Additive 0001_identity_core applied locally; full financial/media/business schema remains unimplemented. |
 | 4 | Not started | Catalogue/content APIs and publishing absent. |
 | 5 | Not started | Super Admin/finance dashboards and workflows absent. |
@@ -74,3 +74,5 @@ Increment 1 feature commit `c854776b9b60dadb718cfea9ffa6720f24eacf6a` is open fo
 ## Instruction 008 — Increment 2
 
 Signed access login and reusable current-user authentication implemented on codex/phase2-login-authentication, stacked over unmerged Increment 1 PR #3. Additive 0002_access_grants; pending/suspended accounts remain blocked. Shared web/Flutter bearer contract and guarded local verification fixture documented. Full session management, refresh rotation, logout and production email verification are not claimed. See [report 008](../DEVELOPMENT_REPORT_008.md) for actual checks and PR evidence. Earlier sections retain historical evidence.
+
+Increment 2 Windows suite: **86 passed**, zero skipped integrations. [PR #4](https://github.com/vistait2018/ai-movie-platform/pull/4) is open, stacked on PR #3; [workflow 41194733414](https://github.com/vistait2018/ai-movie-platform/actions/runs/41194733414) confirms quality and containers passed at 41c98adc2a4418428a75ce362f97461708000ac6. Remaining Phase 2 requirements above still apply; no phase completion or production acceptance is claimed.
