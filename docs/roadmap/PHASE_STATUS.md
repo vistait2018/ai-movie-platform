@@ -68,3 +68,5 @@ Implement the prepared Phase 2 identity slice: minimum SQLAlchemy/Alembic users/
 ## Instruction 007 — Increment 1
 
 Implemented POST /api/v1/auth/register and additive PostgreSQL identity schema on the Phase 2 feature branch. Original 24 tests preserved; expanded suite 45 passed locally. Runtime Swagger registration smoke passed. Phase 2 is not complete; next Increment 2 delivers login, token issuance and protected current-user behavior. See report 007 and development/REGISTRATION.md for scope and exact results.
+
+Increment 1 feature commit `c854776b9b60dadb718cfea9ffa6720f24eacf6a` is open for review in [PR #3](https://github.com/vistait2018/ai-movie-platform/pull/3); [required CI checks](https://github.com/vistait2018/ai-movie-platform/actions/runs/41193643965) both passed, including canonical Docker migrations. Increment 1 is delivered; full Phase 2 remains incomplete.
