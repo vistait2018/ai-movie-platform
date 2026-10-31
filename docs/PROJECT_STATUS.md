@@ -8,7 +8,7 @@ Verified foundation includes Python 3.12.14/locked dependencies, Docker/Compose,
 
 Final official suite: 24 passed, zero failures/errors/skipped integration tests. Ruff, format, mypy, Bandit, package consistency, lock and advisory checks pass. GitHub quality/containers passed; deliberate failing PR #1 was blocked, closed unmerged and its branch deleted. Future changes must pass the protected PR workflow.
 
-Phase 0 product/commercial decisions remain pending separately. Phase 2 Increments 1 and 2 implement pending Viewer registration plus verified-active login and signed access to /me. Current local suite: 86 passed with real PostgreSQL/Redis. Production email verification, recovery, refresh/logout, MFA, full RBAC and Phase 2 acceptance remain incomplete. AI/movie/streaming/finance/mobile UI features remain unimplemented. See report 008 for current CI evidence.
+Phase 0 product/commercial decisions remain pending separately. Phase 2 Increments 1–3 implement registration, login/me, email verification and password recovery with encrypted durable development delivery. Current local suite: 122 passed with real PostgreSQL/Redis; required GitHub jobs passed. Real email provider, refresh/logout, MFA, full RBAC and Phase 2 acceptance remain incomplete. AI/movie/streaming/finance/mobile UI features remain unimplemented. See report 008 for current CI evidence.
 
 No credentials, local .env/backups, environments or caches are committed. The unrelated empty New Text Document.txt is preserved. No live finance, paid AI call or production deployment occurred.
 

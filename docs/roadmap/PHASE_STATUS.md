@@ -11,7 +11,7 @@ Phase 0 commercial/product owner decisions remain pending separately. Phase 2 In
 | --- | --- | --- |
 | 0 | Documentation prepared; approval pending | PRD, MVP scope, business rules, roles, architecture, preliminary database design, decisions, risks and roadmap written to the working tree. BR-01–13 and proposed service targets await owner decisions. |
 | 1 | **Complete — accepted 31 October 2026** | Local and independent Ubuntu setup/CI verified; protected main enforcement proven; credential sources reconciled with authorization; live API/worker healthy; 24 tests passed, quality/security checks passed, data preserved. See PHASE_1_ACCEPTANCE.md and report 006. |
-| 2 | In progress — Increment 3 locally verified; CI pending | Verification/reset actions, encrypted durable development outbox and grant revocation added. Real email provider, refresh/logout, full RBAC, MFA and phase acceptance remain incomplete. |
+| 2 | In progress — Increment 3 implemented and CI verified | Verification/reset actions, encrypted durable development outbox and grant revocation added. Real email provider, refresh/logout, full RBAC, MFA and phase acceptance remain incomplete. |
 | 3 | Identity subset implemented for Phase 2 | Additive identity migrations 0001–0003 applied locally; full financial/media/business schema remains unimplemented. |
 | 4 | Not started | Catalogue/content APIs and publishing absent. |
 | 5 | Not started | Super Admin/finance dashboards and workflows absent. |
@@ -80,3 +80,5 @@ Increment 2 Windows suite: **86 passed**, zero skipped integrations. [PR #4](htt
 ## Instruction 009 — Increment 3
 
 Local official suite: **122 passed**, preserving all 86 existing tests; zero skipped integrations. Full Docker HTTP/CLI walkthrough passed including verification, reset, old-password rejection and grant revocation. 0003 is additive, data preserved. PR #3 and #4 remain unmerged; this increment stacks on #4 and must follow foundation-first merge order. [Report 009](../DEVELOPMENT_REPORT_009.md) and [Swagger walkthrough](../development/EMAIL_VERIFICATION_RECOVERY.md). Phase 2 remains incomplete.
+
+[PR #5](https://github.com/vistait2018/ai-movie-platform/pull/5), commit 0ad23e2e35f459221e85019c0a6b9c691f7a1845: [required quality/containers passed](https://github.com/vistait2018/ai-movie-platform/actions/runs/41230214913), including canonical Docker migration checks. Review remains open; Phase 2 acceptance is not claimed.
