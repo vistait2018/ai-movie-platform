@@ -2,7 +2,7 @@ from functools import lru_cache
 from typing import Literal
 from urllib.parse import urlsplit
 
-from pydantic import Field, SecretStr, model_validator
+from pydantic import EmailStr, Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -31,6 +31,22 @@ class Settings(BaseSettings):
     action_requests_per_window: int = Field(default=5, ge=1, le=100)
     action_confirmations_per_window: int = Field(default=20, ge=1, le=100)
     action_window_seconds: int = Field(default=300, ge=1, le=3600)
+    email_provider: Literal["outbox", "mailtrap_sandbox", "smtp"] = "outbox"
+    smtp_host: str | None = None
+    smtp_port: int = Field(default=2525, ge=1, le=65535)
+    smtp_username: SecretStr | None = None
+    smtp_password: SecretStr | None = None
+    smtp_starttls: bool = True
+    smtp_timeout_seconds: float = Field(default=10, ge=1, le=30)
+    email_from_address: EmailStr | None = None
+    email_from_name: str = Field(default="AI Movie Platform", max_length=100)
+
+    @field_validator(
+        "smtp_host", "smtp_username", "smtp_password", "email_from_address", mode="before"
+    )
+    @classmethod
+    def empty_email_setting(cls, value: object) -> object:
+        return None if value == "" else value
 
     @model_validator(mode="after")
     def validate_services(self) -> "Settings":

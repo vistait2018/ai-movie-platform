@@ -76,10 +76,24 @@ def isolated_settings(monkeypatch):
         "APP_ACTION_REQUESTS_PER_WINDOW",
         "APP_ACTION_CONFIRMATIONS_PER_WINDOW",
         "APP_ACTION_WINDOW_SECONDS",
+        "APP_SMTP_HOST",
+        "APP_SMTP_PORT",
+        "APP_SMTP_USERNAME",
+        "APP_SMTP_PASSWORD",
+        "APP_SMTP_STARTTLS",
+        "APP_SMTP_TIMEOUT_SECONDS",
+        "APP_EMAIL_FROM_ADDRESS",
+        "APP_EMAIL_FROM_NAME",
     ):
         monkeypatch.delenv(key, raising=False)
     monkeypatch.setenv("APP_ENVIRONMENT", "test")
+    monkeypatch.setenv("APP_EMAIL_PROVIDER", "outbox")
     monkeypatch.setenv("APP_EMAIL_OUTBOX_KEY", Fernet.generate_key().decode())
+
+    def forbid_live_smtp(*args, **kwargs):
+        raise AssertionError("Live SMTP is forbidden in automated tests; use an explicit mock")
+
+    monkeypatch.setattr("smtplib.SMTP", forbid_live_smtp)
     get_settings.cache_clear()
     app.dependency_overrides.clear()
     yield

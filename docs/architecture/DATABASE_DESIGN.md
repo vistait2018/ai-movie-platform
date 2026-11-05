@@ -53,3 +53,7 @@ Additive migration 0002_access_grants records UUID jti/user, created_at, expires
 ## Increment 3 identity actions and delivery
 
 Additive revision 0003_auth_actions_outbox introduces auth_actions (UUID, user FK/index, constrained purpose, recipient snapshot, unique digest, UTC creation/expiry/consumption) and email_outbox (UUID, unique action FK, encrypted payload and creation time). No raw bearer/action credential is stored in plaintext. Successful/replaced actions delete encrypted delivery payloads; reset consumes all outstanding actions and revokes access_grants atomically. Existing migrations and data remain unchanged. Retention cleanup and real delivery status/retry metadata remain future work.
+
+## SMTP metadata — revision 0004
+
+SMTPDelivery adds a unique action reference, provider/status, attempt count, retry/lease/submission times and generic error code. No SMTP message body, raw action token or SMTP credential is stored by the SMTP path. Worker preparation updates only the action digest and job lease in a committed transaction before network delivery. Migration upgrade adds one table/index; earlier revisions and data are preserved. Downgrade is exercised only on disposable test databases.

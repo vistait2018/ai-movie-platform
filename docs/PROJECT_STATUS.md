@@ -1,6 +1,6 @@
 # Project status
 
-Updated 31 October 2026 (Africa/Lagos). [Official Roadmap Version 4.0](roadmap/ROADMAP_V4.md) is unchanged.
+Updated 5 November 2026 (Africa/Lagos). [Official Roadmap Version 4.0](roadmap/ROADMAP_V4.md) is unchanged.
 
 **Phase 1 is complete and formally accepted.** [Acceptance evidence](roadmap/PHASE_1_ACCEPTANCE.md), [current phase status](roadmap/PHASE_STATUS.md), [report 006](DEVELOPMENT_REPORT_006.md).
 
@@ -25,3 +25,7 @@ Phase 2 Increment 2 adds verified-active login, short-lived signed bearer access
 ## Current increment — Instruction 009
 
 Phase 2 Increment 3 implements expiring single-use verification/reset workflows, atomic account/audit/grant changes and encrypted PostgreSQL development outbox with restricted CLI inspection. Local suite: 122 passed, no skipped integrations. Registration/login/me remain functional. [Practical Swagger guide](development/EMAIL_VERIFICATION_RECOVERY.md), [report 009](DEVELOPMENT_REPORT_009.md). Real-provider delivery, refresh/logout, cookie/CSRF sessions, MFA, full RBAC and Phase 2 acceptance remain incomplete. Roadmap 4.0 unchanged. Earlier sections retain historical evidence.
+
+## Current follow-up — Mailtrap SMTP
+
+144 automated tests pass, including the prior 122; local quality/security/dependency/migration checks pass. Additive 0004 provides metadata-only SMTP jobs, verified STARTTLS and worker retries. Both sandbox captures were owner-confirmed and the live verification/login/me/recovery/reset flow passed, including old-password/access rejection and database grant revocation. Automated inbox UI access was blocked at Cloudflare; no automated capture inspection is claimed. Commit/PR/CI are pending this continuation. See [Report 009](DEVELOPMENT_REPORT_009.md) and [Mailtrap guide](development/MAILTRAP_SANDBOX.md). Phase 2 remains incomplete.

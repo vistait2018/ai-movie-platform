@@ -120,3 +120,34 @@ class EmailOutbox(Base):
     )
     encrypted_payload: Mapped[bytes] = mapped_column(LargeBinary)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class SMTPDelivery(Base):
+    """SMTP job metadata only: no token, message body or SMTP credential columns."""
+
+    __tablename__ = "smtp_deliveries"
+    __table_args__ = (
+        CheckConstraint(
+            "provider IN ('mailtrap_sandbox', 'smtp')", name="ck_smtp_deliveries_provider"
+        ),
+        CheckConstraint(
+            "status IN ('pending', 'sending', 'submitted', 'failed', 'cancelled')",
+            name="ck_smtp_deliveries_status",
+        ),
+        CheckConstraint("attempts >= 0", name="ck_smtp_deliveries_attempts"),
+    )
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    action_id: Mapped[UUID] = mapped_column(
+        ForeignKey("auth_actions.id", ondelete="CASCADE"), unique=True
+    )
+    provider: Mapped[str] = mapped_column(String(32))
+    status: Mapped[str] = mapped_column(
+        String(20), default="pending", server_default="pending", index=True
+    )
+    attempts: Mapped[int] = mapped_column(default=0, server_default="0")
+    next_attempt_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    leased_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    submitted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_error_code: Mapped[str | None] = mapped_column(String(40))

@@ -107,3 +107,7 @@ GitHub CI is now verified for repair commit `ec605fa7aa082c8ed20b79bb400b9873873
 ### Verify email and recover a password
 
 Increment 3 adds `/api/v1/auth/request-verification`, `/verify-email`, `/forgot-password` and `/reset-password`. New registrations queue encrypted durable development messages. Follow [the eight-step Swagger walkthrough](docs/development/EMAIL_VERIFICATION_RECOVERY.md) to retrieve messages through the restricted local CLI, verify, log in and reset a password. No paid provider or public outbox viewer is used.
+
+### Mailtrap sandbox SMTP
+
+Configure the ignored local .env for `mailtrap_sandbox` and use the existing worker to deliver verification/reset emails over verified STARTTLS. Follow [the Mailtrap Swagger walkthrough](docs/development/MAILTRAP_SANDBOX.md). SMTP jobs store metadata and token hashes only; automated tests mock all SMTP traffic. Sandbox mode is rejected in production.
