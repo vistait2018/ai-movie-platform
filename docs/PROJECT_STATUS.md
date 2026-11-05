@@ -2,7 +2,7 @@
 
 Updated 5 November 2026 (Africa/Lagos). [Official Roadmap Version 4.0](roadmap/ROADMAP_V4.md) is unchanged.
 
-**Current development: Phase 2 Increment 6 RBAC/identity ownership is implemented on codex/phase2-rbac-ownership, based on accepted Increment 5 PR #8.** Existing seeded roles/permissions are reused; own-profile and privileged development/test operations are enforced. Production privileged operations deny until MFA. No migration or live administrator bootstrap. Final tests/PR/CI acceptance are pending. [Report 012](DEVELOPMENT_REPORT_012.md), [authorization contract](development/AUTHORIZATION.md). Phase 2 remains incomplete.
+**Current development: Phase 2 Increment 6 RBAC/identity ownership is accepted within its documented development/MFA boundary on codex/phase2-rbac-ownership.** Existing seeded roles/permissions and shared browser/Bearer identity checks are verified by 270 local/Ubuntu tests. Commit e0a7a3f3538f13b7ffc9137f51076864f65f25d4 is in open [PR #9](https://github.com/vistait2018/ai-movie-platform/pull/9), based on #8; [quality/containers passed](https://github.com/vistait2018/ai-movie-platform/actions/runs/42085077043). Production privileged operations deny until MFA. No migration or live administrator bootstrap. [Report 012](DEVELOPMENT_REPORT_012.md), [authorization contract](development/AUTHORIZATION.md). Phase 2 remains incomplete.
 
 Previous Increment 4 is accepted in open PR #7. Older entries below retain historical evidence.
 

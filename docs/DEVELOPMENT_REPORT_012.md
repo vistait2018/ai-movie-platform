@@ -1,6 +1,6 @@
 # Development Report 012 — RBAC and resource ownership
 
-5 November 2026 · Official Roadmap 4.0 · Phase 2 Increment 6.
+5 November 2026 · Official Roadmap 4.0 · **Increment 6 accepted within its documented development/MFA boundary; Phase 2 incomplete.**
 
 ## Scope and audit
 
@@ -89,7 +89,8 @@ Ruff lint/format, application mypy (39 files), runner mypy, Bandit, pip check an
 uv lock --check ran. Fresh pip_audit returned **No known vulnerabilities found**.
 Final Ruff lint/format, app/runner mypy and Bandit passed. Exact-value scans
 against local database/JWT/outbox/SMTP secrets passed across tracked/intended new
-files; no credentials were printed. Final staged/committed artifact checks follow. Dependencies and
+files; no credentials were printed. All 16 staged project files passed exact-secret/artifact review; .env, environments,
+caches, ignored tools and unrelated files were excluded. Dependencies and
 lock unchanged; uv uses the existing ignored workspace cache.
 
 ## Database and local services
@@ -104,7 +105,7 @@ Compose config --quiet passed. Canonical local build failed at registry metadata
 resolution (ghcr.io DNS), before compilation. The existing cached locked runtime
 was rebuilt with only reviewed app/migration/config files in a unique ignored
 context. API/worker only refreshed with --no-deps --no-build --pull never --wait;
-canonical independent GitHub build remains mandatory. Normalized SHA-256 over
+canonical independent GitHub build subsequently passed in run 42085077043. Normalized SHA-256 over
 all app/migration Python, Alembic config and locked dependency files matches the
 running image. All five services are healthy: API 7d5699b8fba0, worker d5de2005674c,
 PostgreSQL 337d44f5482f, Redis 746130f84b28 and storage bb88aa802c8a. Existing
@@ -124,9 +125,34 @@ through real HTTP test clients against disposable PostgreSQL, not live user data
 
 ## Git and acceptance
 
-Commit SHA, dependent PR URL and actual quality/container CI results are pending
-execution. Do not mark Increment 6 accepted until those checks are verified.
+Implementation commit: **e0a7a3f3538f13b7ffc9137f51076864f65f25d4**.
+[PR #9](https://github.com/vistait2018/ai-movie-platform/pull/9) is OPEN against
+**codex/phase2-browser-sessions** (#8). [PR CI 42085077043](https://github.com/vistait2018/ai-movie-platform/actions/runs/42085077043)
+completed SUCCESS: **quality 73 seconds, containers 55 seconds**. Ubuntu official
+suite: **270 passed**, one existing warning, **34.58 seconds**. Fresh CI advisory
+audit: no known vulnerabilities. Canonical build, Compose startup, migration
+upgrade/drift check, readiness/storage and worker ping passed. Push CI 42085062907
+also passed. Combined log download had a transient external connection failure;
+direct quality-job retrieval succeeded and confirmed the actual test/audit lines.
+
+Acceptance is for RBAC/identity ownership within the documented development-only
+privileged boundary. Production privileged enablement remains deliberately denied
+pending real MFA. No current test/CI blocker is outstanding. Local registry DNS
+continues to limit canonical local builds; successful independent canonical CI
+covers build acceptance. The acceptance-record commit must retain green checks.
 Never merge automatically. Required order: #3 → #4 → #5 → #6 → #7 → #8 → Increment 6.
+
+## Acceptance checklist
+
+- [x] Existing database roles/permissions reused, unknown roles/permissions denied.
+- [x] Own and explicit privileged identity access checked in shared adapters.
+- [x] Assignment/revocation, escalation/IDOR, disabled accounts and last-admin guards verified.
+- [x] Role changes revoke sessions/grants atomically; stale authorization and rollback tested.
+- [x] Browser CSRF and API/session compatibility preserved; 225 old tests retained.
+- [x] 270 local/Ubuntu tests pass; required quality/security/dependency checks pass.
+- [x] Data/volumes/migrations preserved; live ownership and service health verified.
+- [x] Reviewed/scanned implementation committed/pushed; PR #9 open; required CI passed.
+- [x] Documentation updated; production privilege denial/MFA limitation explicitly recorded.
 
 ## Handover and limitations
 
