@@ -1,10 +1,10 @@
 # Development report 010 — Phase 2 Increment 4
 
-5 November 2026, Africa/Lagos. Official Roadmap 4.0 unchanged. Branch **codex/phase2-refresh-sessions**. **Local and live acceptance verified; commit/PR/CI completion pending below. Phase 2 is not complete.**
+5 November 2026, Africa/Lagos. Official Roadmap 4.0 unchanged. Branch **codex/phase2-refresh-sessions**. **Increment 4 acceptance requirements are verified, committed and covered by successful required CI. Phase 2 is not complete.**
 
 ## 1. Executive summary
 
-Implemented opt-in refresh-mode login, rotating digest-only refresh credentials, database session families, strict reuse revocation, logout/logout-all, access/session checks and password-reset revocation. Default login JSON remains compatible with the existing exact-response tests. Local PostgreSQL integration tests, fresh advisory audit, live additive migration and deployed endpoint acceptance now pass. The prior approval-review usage blocker is resolved; commit/PR/CI outcomes are recorded below as completed.
+Implemented opt-in refresh-mode login, rotating digest-only refresh credentials, database session families, strict reuse revocation, logout/logout-all, access/session checks and password-reset revocation. Default login JSON remains compatible with the existing exact-response tests. Local PostgreSQL integration tests, fresh advisory audit, live additive migration and deployed endpoint acceptance now pass. The prior approval-review usage blocker is resolved; commit/PR/CI outcomes are recorded below.
 
 ## 2. Baseline and pre-development audit
 
@@ -56,7 +56,7 @@ Reused the existing successfully built Increment 4 cached-base runtime: compared
 
 Live HTTP smoke ran against the updated API at 2026-11-05 14:24:46 UTC. It created a scoped development fixture through the existing registration service in local-outbox mode and then verified it through the actual HTTP verify-email endpoint (200), without SMTP sends or any activation shortcut. The fixture does not change .env/provider settings. Confirmed /health and /ready 200, new OpenAPI routes present, default legacy login's exact three-field response, refresh 200, old-access rejection, strict reuse 401 with successor invalidated, unrelated device still usable, logout/repeat 204, logout-all 204 across devices and legacy grants, two concurrent refresh requests returning [200,401] with the winner subsequently rejected, and fresh login 200 after revocation. Cleanup revoked all **six** fixture sessions and **nine** access grants; no password/token was displayed or persisted. Sanitized proof is in ignored .tools/refresh010-live-evidence.json; the fixture account/audit history is retained.
 
-Continuation official suite: **177 passed**, zero failures/errors/skipped integrations, **101.38s**, one existing warning. Existing 144 tests are preserved. Runtime smoke, security checks and advisory audit passed independently. New CI evidence is recorded below after the dependent PR run.
+Continuation official suite: **177 passed**, zero failures/errors/skipped integrations, **101.38s**, one existing warning. Existing 144 tests are preserved. Runtime smoke, security checks and advisory audit passed independently. Required CI evidence is recorded below.
 
 ## 11. Known issues and blockers
 
@@ -64,7 +64,7 @@ The approval-review usage blocker and fresh advisory/deployment gates are resolv
 
 ## 12. Git commit and PR information
 
-Baseline **f16a62ae5239e8072ea29c812375a31ff0a8001a** and the dedicated branch are preserved. Source commit, PR URL and current CI run will be recorded below once created/verified. Intended PR base remains **codex/phase2-mailtrap-smtp** (#6). Existing #6 success is not used as this increment's CI evidence. Preserve #3 → #4 → #5 → #6 → Increment 4; never merge automatically or force-push.
+Baseline **f16a62ae5239e8072ea29c812375a31ff0a8001a** and branch **codex/phase2-refresh-sessions** are preserved. Implementation commit: **a62f869e721f1dd6906cb34dce78150b974adeec**. [PR #7](https://github.com/vistait2018/ai-movie-platform/pull/7) is OPEN against **codex/phase2-mailtrap-smtp** (#6). [PR CI run 42046093639](https://github.com/vistait2018/ai-movie-platform/actions/runs/42046093639) completed SUCCESS: quality **66 seconds**, containers **45 seconds**; Ubuntu suite **177 passed**, one existing warning, **17.20 seconds**. Push run 42046084209 also passed both jobs. Canonical image build, runtime migration/check, readiness/storage/worker and all quality/security/advisory checks passed independently. No baseline CI result is substituted. Preserve #3 → #4 → #5 → #6 → #7; no merge or force push occurred.
 
 ## 13. Acceptance checklist
 
@@ -78,11 +78,15 @@ Baseline **f16a62ae5239e8072ea29c812375a31ff0a8001a** and the dedicated branch a
 - [x] Fresh advisory check executed successfully: no known vulnerabilities.
 - [x] Fresh backup verified; 0005 applied; matching runtime deployed; all services and live endpoints verified.
 - [x] Working-source credential/artifact and diff scan passed.
-- [ ] Intended stage/commit/push and dependent PR completed.
-- [ ] Required GitHub quality/containers passed for this branch.
+- [x] Intended files reviewed/scanned, committed/pushed; dependent PR #7 created.
+- [x] Required GitHub quality/containers passed for this increment.
 
 ## 14. Next increment and handover
 
-Finish the remaining Git/CI acceptance gates; local/live/advisory requirements are now verified. Do not repeat working feature implementation. Then deliver the planned browser cookie/BFF security, CSRF/origin enforcement and client session handling without exposing browser refresh credentials. Remaining full Phase 2 work also includes RBAC/ownership, privileged MFA, production email acceptance and operational security/retention. Phase 2 and Increment 4 acceptance are **not complete** while these gates remain unverified.
+Increment 4 acceptance is verified. Review the dependent PR chain without merging automatically; the remaining documentation commit must keep required checks green. Do not repeat working feature implementation. Next deliver the planned browser cookie/BFF security, CSRF/origin enforcement and client session handling without exposing browser refresh credentials. Remaining full Phase 2 work also includes RBAC/ownership, privileged MFA, production email acceptance and operational security/retention. **Phase 2 remains incomplete**; acceptance here covers only Increment 4.
 
 Commands run: existing .venv-dev Python scripts/run_tests.py; Ruff check/format; app/runner mypy; Bandit; pip check; uv lock --check; Alembic current; Compose config/build; ignored cached runtime build. The earlier fresh-audit attempt was blocked before execution; the continuation reran it successfully. Current continuation also executed pg_dump/pg_restore verification, backup copy/hash, additive upgrade/current/check, image source comparison, API/worker refresh, service checks and live HTTP acceptance smoke. No .env value was printed or changed.
+
+## Final continuation handover
+
+Completed the outstanding gates without rewriting working authentication functionality: fresh advisory clean; backup verified before additive 0005; existing matching runtime reused; API/worker only refreshed; all five services healthy; live refresh/logout/logout-all/replay/concurrency/legacy checks passed; 177 automated tests passed; credentials/artifacts scanned; implementation committed and PR #7 required checks passed. No .env/credential or volume reset, old migration change, force push, PR merge or Phase 2 completion. The canonical local registry DNS limitation was independently covered by successful GitHub canonical builds. The only intentional untracked file is unrelated New Text Document.txt. Next application increment is browser session/BFF/cookie and CSRF/origin security, followed by remaining RBAC/MFA/production acceptance.

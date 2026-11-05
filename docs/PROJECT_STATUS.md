@@ -2,7 +2,7 @@
 
 Updated 5 November 2026 (Africa/Lagos). [Official Roadmap Version 4.0](roadmap/ROADMAP_V4.md) is unchanged.
 
-**Current development: Phase 2 Increment 4 is locally/live verified on codex/phase2-refresh-sessions; commit/PR/CI acceptance is pending.** Fresh advisory audit passed, 0005 is applied after a verified backup, and the deployed runtime passed refresh/reuse/logout/logout-all acceptance checks. The previous approval-review blocker is resolved. [Report 010](DEVELOPMENT_REPORT_010.md), [session contract](development/SESSIONS.md).
+**Current development: Phase 2 Increment 4 acceptance is verified on codex/phase2-refresh-sessions.** Fresh advisory audit passed, 0005 is applied after a verified backup, and the deployed runtime passed refresh/reuse/logout/logout-all acceptance checks. The previous approval-review blocker is resolved. Commit a62f869e721f1dd6906cb34dce78150b974adeec is in open [PR #7](https://github.com/vistait2018/ai-movie-platform/pull/7), based on #6; [quality/containers passed](https://github.com/vistait2018/ai-movie-platform/actions/runs/42046093639). Phase 2 remains incomplete. [Report 010](DEVELOPMENT_REPORT_010.md), [session contract](development/SESSIONS.md).
 
 **Phase 1 is complete and formally accepted.** [Acceptance evidence](roadmap/PHASE_1_ACCEPTANCE.md), [current phase status](roadmap/PHASE_STATUS.md), [report 006](DEVELOPMENT_REPORT_006.md).
 

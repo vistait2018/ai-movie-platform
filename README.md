@@ -112,6 +112,6 @@ Increment 3 adds `/api/v1/auth/request-verification`, `/verify-email`, `/forgot-
 
 Configure the ignored local .env for `mailtrap_sandbox` and use the existing worker to deliver verification/reset emails over verified STARTTLS. Follow [the Mailtrap Swagger walkthrough](docs/development/MAILTRAP_SANDBOX.md). SMTP jobs store metadata and token hashes only; automated tests mock all SMTP traffic. Sandbox mode is rejected in production.
 
-### Increment 4 sessions — live verification complete, CI pending
+### Increment 4 sessions — acceptance verified
 
 Refresh-mode login, strict refresh rotation and /api/v1/auth/logout plus /logout-all are implemented on the dependent feature branch. Default login stays compatible. See [session/client security contract](docs/development/SESSIONS.md) and [Report 010](docs/DEVELOPMENT_REPORT_010.md) before attempting the new endpoints: live 0005 deployment, advisory and endpoint checks passed; current PR/CI evidence is recorded in Report 010.
