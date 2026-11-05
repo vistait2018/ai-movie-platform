@@ -61,6 +61,11 @@ def isolated_settings(monkeypatch):
 
     # Unit tests never inherit an operator's local service credentials or environment.
     for key in (
+        "APP_BROWSER_ORIGINS",
+        "APP_TRUSTED_HOSTS",
+        "APP_BROWSER_COOKIE_SECURE",
+        "APP_BROWSER_COOKIE_SECONDS",
+        "APP_BROWSER_CSRF_SECONDS",
         "APP_DATABASE_URL",
         "APP_REDIS_URL",
         "APP_READINESS_TIMEOUT_SECONDS",

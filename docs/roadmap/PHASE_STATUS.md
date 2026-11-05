@@ -11,7 +11,7 @@ Phase 0 commercial/product owner decisions remain pending separately. Phase 2 In
 | --- | --- | --- |
 | 0 | Documentation prepared; approval pending | PRD, MVP scope, business rules, roles, architecture, preliminary database design, decisions, risks and roadmap written to the working tree. BR-01–13 and proposed service targets await owner decisions. |
 | 1 | **Complete — accepted 31 October 2026** | Local and independent Ubuntu setup/CI verified; protected main enforcement proven; credential sources reconciled with authorization; live API/worker healthy; 24 tests passed, quality/security checks passed, data preserved. See PHASE_1_ACCEPTANCE.md and report 006. |
-| 2 | In progress — Increment 4 accepted; Phase 2 incomplete | Refresh families/rotation/logout are now locally implemented/tested. Fresh advisory and live 0005 deployment passed; required Increment 4 CI passed; browser cookie/CSRF, full RBAC, MFA and production acceptance remain incomplete. |
+| 2 | In progress — Increment 5 locally verified; PR/CI pending | Refresh families/rotation/logout are now locally implemented/tested. Increment 4 is accepted. Browser cookie/CSRF adapter passes 225 local tests and live checks; Increment 5 PR/CI remains pending. Full RBAC, MFA and production acceptance remain incomplete. See Report 011. |
 | 3 | Identity subset implemented for Phase 2 | Additive identity migrations 0001–0005 applied locally; full financial/media/business schema remains unimplemented. |
 | 4 | Not started | Catalogue/content APIs and publishing absent. |
 | 5 | Not started | Super Admin/finance dashboards and workflows absent. |

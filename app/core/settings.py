@@ -28,6 +28,11 @@ class Settings(BaseSettings):
     refresh_session_seconds: int = Field(default=2592000, ge=3600, le=7776000)
     session_requests_per_window: int = Field(default=30, ge=1, le=1000)
     session_window_seconds: int = Field(default=60, ge=1, le=3600)
+    browser_origins: list[str] = ["http://127.0.0.1:8000", "http://localhost:8000"]
+    trusted_hosts: list[str] = ["127.0.0.1", "localhost", "testserver"]
+    browser_cookie_secure: bool = False
+    browser_cookie_seconds: int = Field(default=604800, ge=60, le=7776000)
+    browser_csrf_seconds: int = Field(default=900, ge=60, le=3600)
     email_outbox_key: SecretStr | None = None
     verification_seconds: int = Field(default=3600, ge=60, le=86400)
     password_reset_seconds: int = Field(default=900, ge=60, le=3600)
@@ -54,6 +59,33 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_services(self) -> "Settings":
+        remote = self.environment in {"staging", "production"}
+        if not self.browser_origins or not self.trusted_hosts:
+            raise ValueError("Explicit browser origins and trusted hosts are required")
+        for origin in self.browser_origins:
+            parsed = urlsplit(origin)
+            if (
+                parsed.scheme not in {"http", "https"}
+                or not parsed.hostname
+                or parsed.username is not None
+                or parsed.password is not None
+                or parsed.path
+                or parsed.query
+                or parsed.fragment
+                or "*" in origin
+                or origin != f"{parsed.scheme}://{parsed.netloc}"
+                or (remote and parsed.scheme != "https")
+            ):
+                raise ValueError("Browser origins must be exact HTTP(S) origins")
+            if remote and parsed.hostname in {"localhost", "127.0.0.1", "testserver"}:
+                raise ValueError("Production browser origins must be explicit deployment origins")
+        for host in self.trusted_hosts:
+            if not host or any(c in host for c in "*/:@?# "):
+                raise ValueError("Trusted hosts must be exact hostnames")
+            if remote and host in {"localhost", "127.0.0.1", "testserver"}:
+                raise ValueError("Production trusted hosts must be explicit deployment hosts")
+        if remote and not self.browser_cookie_secure:
+            raise ValueError("Secure browser cookies are required outside local development")
         if self.refresh_token_seconds <= self.access_token_seconds:
             raise ValueError("Refresh lifetime must exceed access lifetime")
         if self.refresh_session_seconds < self.refresh_token_seconds:

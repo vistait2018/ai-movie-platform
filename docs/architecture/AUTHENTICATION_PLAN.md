@@ -90,3 +90,7 @@ The existing action endpoints now support configured Mailtrap sandbox STARTTLS d
 ## Instruction 010 — implemented and accepted session increment
 
 [Pre-code audit/decisions](REFRESH_SESSION_DECISIONS.md) and [API/security contract](../development/SESSIONS.md) define the new opt-in refresh-mode login, opaque digest-only refresh credentials, bounded absolute families, strict replay revocation and PostgreSQL locking. Default access-only login stays compatible. /me checks linked family state, and password reset/logout-all revoke legacy and session grants together. Backend code and live 0005 runtime are verified; Git/CI acceptance status is recorded in [Report 010](../DEVELOPMENT_REPORT_010.md). Browser cookie/BFF/CSRF transport remains the next increment; never persist these credentials in browser storage.
+
+## Instruction 011 — browser adapter
+
+Browser cookie login/refresh/logout/all and session status now reuse the existing PostgreSQL families. Signed session-bound CSRF challenges, exact Origin/Referer checks, host/CORS restrictions and secure production settings are implemented. This supersedes prior statements that cookies never authenticate for the browser-specific router only; bearer routes remain unchanged. No migration is needed. See [decisions](BROWSER_SESSION_DECISIONS.md), [contracts](../development/BROWSER_SESSIONS.md) and [report](../DEVELOPMENT_REPORT_011.md). Full Phase 2 RBAC/MFA and production acceptance remain outstanding.

@@ -107,7 +107,15 @@ def test_deployed_settings_reject_placeholder_passwords():
             database_url="postgresql://movie:replace-example-password-before-use@db/movie",
             redis_url="redis://:secret@cache/0",
         )
-    assert configured(environment="production").environment == "production"
+    assert (
+        configured(
+            environment="production",
+            browser_cookie_secure=True,
+            browser_origins=["https://movies.example"],
+            trusted_hosts=["movies.example"],
+        ).environment
+        == "production"
+    )
 
 
 @pytest.mark.parametrize("url", ["sqlite:///movie.db", "postgresql:///movie", "https://db"])
