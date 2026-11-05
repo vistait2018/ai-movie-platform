@@ -71,3 +71,7 @@ Official real-service tests: `.\.venv-dev\Scripts\python.exe scripts/run_tests.p
 Not implemented: refresh issuance/rotation, logout/revoke APIs, browser cookie/CSRF adapter, real-provider delivery, MFA, device/session management or full RBAC. Privileged MFA is still mandatory for production phase acceptance; no production authentication acceptance is claimed. /me roles are descriptive; future actions must enforce permissions/ownership separately.
 
 Reference: [PyJWT strict decoding and required claims](https://pyjwt.readthedocs.io/en/stable/api.html). Instruction 008's signed-token decision is recorded in the authentication plan.
+
+## Increment 4 contract update — local implementation only
+
+Opt-in session_mode=refresh adds a rotating refresh family to the existing login endpoint. Default three-field login remains unchanged. New /refresh, /logout and /logout-all, strict replay policy, reset integration and safe browser/Flutter storage contracts are in [SESSIONS.md](SESSIONS.md). Deployment/CI gates are pending per Report 010; earlier no-refresh statements describe the historical Increment 2 slice. Browser cookie/CSRF transport is still unimplemented.

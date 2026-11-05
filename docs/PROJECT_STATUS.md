@@ -2,6 +2,8 @@
 
 Updated 5 November 2026 (Africa/Lagos). [Official Roadmap Version 4.0](roadmap/ROADMAP_V4.md) is unchanged.
 
+**Current development: Phase 2 Increment 4 is locally/live verified on codex/phase2-refresh-sessions; commit/PR/CI acceptance is pending.** Fresh advisory audit passed, 0005 is applied after a verified backup, and the deployed runtime passed refresh/reuse/logout/logout-all acceptance checks. The previous approval-review blocker is resolved. [Report 010](DEVELOPMENT_REPORT_010.md), [session contract](development/SESSIONS.md).
+
 **Phase 1 is complete and formally accepted.** [Acceptance evidence](roadmap/PHASE_1_ACCEPTANCE.md), [current phase status](roadmap/PHASE_STATUS.md), [report 006](DEVELOPMENT_REPORT_006.md).
 
 Verified foundation includes Python 3.12.14/locked dependencies, Docker/Compose, PostgreSQL, Redis, Celery, local storage emulation, health/readiness/logging/errors, tests, real Ubuntu CI and protected-main enforcement. Both local credential sources now authenticate; API /ready is HTTP 200 with both dependencies healthy. Only POSTGRES_PASSWORD was aligned after explicit authorization and ignored backup; only API/worker were refreshed. Existing data, database/cache container identities and volumes were preserved.

@@ -92,6 +92,39 @@ class AccessGrant(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    session_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("auth_sessions.id", ondelete="CASCADE"), index=True
+    )
+
+
+class AuthSession(Base):
+    __tablename__ = "auth_sessions"
+    __table_args__ = (CheckConstraint("expires_at > created_at", name="ck_auth_sessions_expiry"),)
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    revoked_reason: Mapped[str | None] = mapped_column(String(32))
+
+
+class RefreshCredential(Base):
+    __tablename__ = "refresh_credentials"
+    __table_args__ = (
+        CheckConstraint("expires_at > created_at", name="ck_refresh_credentials_expiry"),
+    )
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    session_id: Mapped[UUID] = mapped_column(
+        ForeignKey("auth_sessions.id", ondelete="CASCADE"), index=True
+    )
+    parent_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("refresh_credentials.id", ondelete="SET NULL"), unique=True
+    )
+    token_digest: Mapped[str] = mapped_column(String(64), unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    consumed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class AuthAction(Base):
