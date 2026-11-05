@@ -29,7 +29,9 @@ class BrowserSecurityMiddleware:
                     headers["Content-Security-Policy"] = (
                         "default-src 'none'; frame-ancestors 'none'"
                     )
-                if scope["path"].startswith("/api/v1/auth"):
+                if scope["path"].startswith(
+                    ("/api/v1/auth", "/api/v1/users", "/api/v1/authorization")
+                ):
                     headers["Cache-Control"] = "no-store"
                     headers["Pragma"] = "no-cache"
                 if settings.environment in {"staging", "production"}:

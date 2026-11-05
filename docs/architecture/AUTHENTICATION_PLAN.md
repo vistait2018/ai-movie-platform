@@ -94,3 +94,7 @@ The existing action endpoints now support configured Mailtrap sandbox STARTTLS d
 ## Instruction 011 — browser adapter
 
 Browser cookie login/refresh/logout/all and session status now reuse the existing PostgreSQL families. Signed session-bound CSRF challenges, exact Origin/Referer checks, host/CORS restrictions and secure production settings are implemented. This supersedes prior statements that cookies never authenticate for the browser-specific router only; bearer routes remain unchanged. No migration is needed. See [decisions](BROWSER_SESSION_DECISIONS.md), [contracts](../development/BROWSER_SESSIONS.md) and [report](../DEVELOPMENT_REPORT_011.md). Full Phase 2 RBAC/MFA and production acceptance remain outstanding.
+
+## Increment 6 — authorization and ownership
+
+Central role/permission checks now read current PostgreSQL mappings and enforce identity resource ownership through shared browser/Bearer adapters. Role changes revoke recipient grants atomically; /me requires profile:read. Existing login/action/session implementations remain intact. Privileged production operations fail closed until MFA; no initial admin is silently created. See [authorization decisions](AUTHORIZATION_DECISIONS.md), [contract](../development/AUTHORIZATION.md), and [Report 012](../DEVELOPMENT_REPORT_012.md). Phase 2 remains incomplete.
