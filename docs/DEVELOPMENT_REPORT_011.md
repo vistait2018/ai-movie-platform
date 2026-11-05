@@ -1,6 +1,6 @@
 # Development Report 011 — Secure browser sessions and CSRF
 
-5 November 2026 · Official Roadmap 4.0 · Phase 2 Increment 5.
+5 November 2026 · Official Roadmap 4.0 · **Phase 2 Increment 5 accepted; Phase 2 incomplete.**
 
 ## Scope and audit
 
@@ -63,6 +63,11 @@ fixture now supplies required secure browser settings, original assertions kept)
 README; authentication/session architecture and project/phase records.
 No existing auth service/model/migration implementation was replaced.
 
+Both negative deployed-settings fixtures also supply valid browser configuration,
+so their original missing-service/placeholder-password failures still exercise
+those specific existing controls, independently of new browser validation. The
+final foundation-only recheck passed **21 tests in 1.35s**; Ruff/format still pass.
+
 ## Automated verification
 
 Official runner: `.\.venv-dev\Scripts\python.exe scripts/run_tests.py`.
@@ -109,7 +114,7 @@ before compilation at auth.docker.io DNS resolution. A legacy cached-runtime bui
 initially hit an inaccessible generated cache while packaging the root context.
 Resolved local runtime packaging with a unique ignored context containing only
 app/migrations/alembic.ini over the existing cached image. Dependencies/lock were
-unchanged. Canonical GitHub build remains required independently.
+unchanged. Canonical GitHub build subsequently passed independently in run 42050168929.
 
 Refreshed API/worker only: compose up -d --no-deps --no-build --pull never --wait
 --wait-timeout 120 api worker. Final running-image app/migration/config/lock SHA-256 comparison matched the
@@ -134,10 +139,32 @@ credentials persisted or printed. Sanitized proof remains ignored in
 
 Final source/diff review and exact-value scans against local PostgreSQL, JWT,
 outbox and SMTP secrets passed across tracked and intended new files. No ignored
-configuration, environment/cache/backup or unrelated file is included. Commit,
-dependent PR and actual GitHub Actions results will be recorded after execution. The only intentional unrelated untracked
+configuration, environment/cache/backup or unrelated file is included.
+
+Implementation commit: **e977678ec38874f01773a63e4f11a55a76a0306c**.
+[PR #8](https://github.com/vistait2018/ai-movie-platform/pull/8) is OPEN against
+**codex/phase2-refresh-sessions** (#7). [PR CI run 42050168929](https://github.com/vistait2018/ai-movie-platform/actions/runs/42050168929)
+completed SUCCESS: **quality 71 seconds; containers 45 seconds**. Ubuntu official
+suite: **225 passed**, one existing warning, **24.20 seconds**. Fresh CI advisory
+audit found no known vulnerabilities. Canonical container build/startup, migration
+upgrade/check, readiness/storage and Celery checks all passed. Push run 42050154211
+also completed SUCCESS. Local registry DNS remains an environmental limitation;
+it is independently covered by the passing canonical CI build. No current
+acceptance blocker remains. This acceptance record is committed separately;
+required checks must stay green on its final head. The only intentional unrelated untracked
 file is New Text Document.txt. Preserve #3 → #4 → #5 → #6 → #7 → Increment 5.
 Never merge automatically or bypass branch protection.
+
+## Acceptance checklist
+
+- [x] Cookie authentication, secure deployment configuration and no browser credential JSON.
+- [x] CSRF/origin, CORS/host, login/logout protection and no-store verified.
+- [x] Rotation, concurrency, logout/all, reset revocation and API compatibility verified.
+- [x] 177 prior tests preserved; 225 expanded tests pass locally and on Ubuntu.
+- [x] Quality/security/advisory, runtime/source match, service health and secret review pass.
+- [x] No new migration; original data, persistent service identities and volumes preserved.
+- [x] Implementation committed/pushed; dependent PR #8 open; required CI jobs successful.
+- [x] Architecture, contracts, walkthrough, testing and project records updated.
 
 ## Limitations and handover
 
