@@ -82,3 +82,7 @@ Opaque first-party session design is this project's proposal; the OAuth RFCs gui
 
 ## Ready-to-implement handover — 31 October 2026
 Phase 1 is accepted after protected-main enforcement and authorized credential reconciliation. Begin actual application delivery with the existing stack. First feature slice: users/roles/profile migration plus secure registration and verification contracts; then login/session behavior shared by responsive web and Flutter Android/iOS clients. Implement and test each slice before expanding, using PRs and existing CI. Do not rebuild infrastructure or introduce live paid providers for these features. This document remains a plan; no authentication implementation is included in the Phase 1 acceptance change.
+
+## SMTP follow-up — 5 November 2026
+
+The existing action endpoints now support configured Mailtrap sandbox STARTTLS delivery and a generic SMTP interface. Additive 0004 stores job metadata only; the worker generates the raw email token in memory, commits its digest/lease, then submits SMTP. Leases/backoff prevent simultaneous senders; ambiguous SMTP replies may cause retry/rotation, so exactly-once delivery is not claimed. Mock-only SMTP is enforced in automated tests. Owner-confirmed captures and matching-token redemption completed the live verification/recovery workflow. See [Mailtrap guide](../development/MAILTRAP_SANDBOX.md) and current Report 009. Production provider acceptance and full Phase 2 security remain outstanding.

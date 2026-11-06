@@ -8,7 +8,7 @@ from cryptography.fernet import Fernet
 from sqlalchemy.orm import Session
 
 from app.core.settings import Settings
-from app.models.identity import EmailOutbox
+from app.models.identity import EmailOutbox, SMTPDelivery
 
 
 class DeliveryUnavailable(RuntimeError):
@@ -40,4 +40,18 @@ class DevelopmentOutbox:
 def get_delivery(settings: Settings) -> EmailDelivery:
     # Future provider adapters enqueue durable jobs in this same database transaction.
     # No network send occurs before commit; staging/production fail closed until configured.
-    return DevelopmentOutbox(settings)
+    if settings.email_provider == "outbox":
+        return DevelopmentOutbox(settings)
+    return SMTPQueue(settings)
+
+
+class SMTPQueue:
+    def __init__(self, settings: Settings):
+        from app.services.smtp_transport import validate_smtp
+
+        validate_smtp(settings)
+        self.provider = settings.email_provider
+
+    def enqueue(self, session: Session, action_id: UUID, message: dict[str, str]) -> None:
+        # Discard the initial raw token: the worker creates the deliverable token in memory.
+        session.add(SMTPDelivery(action_id=action_id, provider=self.provider))

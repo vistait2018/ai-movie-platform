@@ -1,8 +1,14 @@
+import logging
+
 from celery import Celery
 from celery.signals import setup_logging
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.logging import configure_logging
 from app.core.settings import get_settings
+from app.db.session import DatabaseUnavailable, get_engine
+from app.services.email_delivery import DeliveryUnavailable
+from app.services.smtp_dispatch import dispatch_due_emails
 
 settings = get_settings()
 celery_app = Celery("movie")
@@ -20,6 +26,7 @@ celery_app.conf.update(
     task_time_limit=300,
     timezone="UTC",
     enable_utc=True,
+    beat_schedule={"smtp-delivery-poll": {"task": "movie.deliver_emails", "schedule": 10.0}},
 )
 
 
@@ -31,3 +38,12 @@ def worker_logging(**kwargs: object) -> None:
 @celery_app.task(name="movie.ping")
 def ping() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@celery_app.task(name="movie.deliver_emails")
+def deliver_emails() -> dict[str, int]:
+    try:
+        return dispatch_due_emails(get_engine(), get_settings())
+    except (SQLAlchemyError, DatabaseUnavailable, DeliveryUnavailable):
+        logging.getLogger("movie.email").warning("email_dispatch_unavailable")
+        return {"unavailable": 1}

@@ -189,7 +189,7 @@ def test_migration_round_trip(migration_engine):
         command.check(config)
         assert (
             connection.scalar(text("SELECT version_num FROM alembic_version"))
-            == "0003_auth_actions_outbox"
+            == "0004_smtp_deliveries"
         )
 
 
