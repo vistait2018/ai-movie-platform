@@ -13,13 +13,15 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.api.browser import browser_credentials, browser_guard
-from app.api.dependencies import bearer, current_user
+from app.api.dependencies import authenticated_context, bearer, current_user
 from app.core.settings import Settings, get_settings
 from app.db.session import DatabaseUnavailable, get_db_session
-from app.models.identity import Role, SecurityEvent, User, UserRole
+from app.models.identity import MFAFactor, Role, SecurityEvent, User, UserRole
 from app.schemas.auth import CurrentUser
-from app.schemas.users import ProfileUpdate
+from app.schemas.users import ProfileUpdate, StatusUpdate
 from app.services import authorization as policy
+from app.services.account_status import change_status
+from app.services.mfa import PRIVILEGED_ROLES
 from app.services.rate_limits import limit_authorization
 from app.services.sessions import active_user, revoke_user_sessions
 
@@ -32,6 +34,7 @@ Config = Annotated[Settings, Depends(get_settings)]
 class Principal:
     user_id: UUID
     credentials: HTTPAuthorizationCredentials = field(repr=False)
+    session_id: UUID | None = None
 
 
 def bearer_principal(
@@ -41,14 +44,14 @@ def bearer_principal(
 ) -> Principal:
     if credentials is None:
         raise HTTPException(401, "Authentication required", headers={"WWW-Authenticate": "Bearer"})
-    user = current_user(credentials, session, settings)
-    return Principal(user.id, credentials)
+    context = authenticated_context(credentials, session, settings)
+    return Principal(context.user.id, credentials, context.family.id if context.family else None)
 
 
 def browser_principal(request: Request, session: Database, settings: Config) -> Principal:
     credentials = browser_credentials(request, settings)
-    user = current_user(credentials, session, settings)
-    return Principal(user.id, credentials)
+    context = authenticated_context(credentials, session, settings)
+    return Principal(context.user.id, credentials, context.family.id if context.family else None)
 
 
 def permission_dependency(permission: str) -> Callable[..., User]:
@@ -118,11 +121,15 @@ def change_role(
     grant: bool,
 ) -> None:
     initial = current_user(principal.credentials, session, settings)
-    policy.require_privileged(session, initial, "roles:assign", settings)
+    policy.require_privileged(
+        session, initial, "roles:assign", settings, session_id=principal.session_id
+    )
     if target_id == principal.user_id or code not in policy.ROLES:
         raise policy.forbidden(principal.user_id)
     actor = lock_and_reauthenticate(session, principal, target_id, settings, roles=True)
-    policy.require_privileged(session, actor, "roles:assign", settings)
+    policy.require_privileged(
+        session, actor, "roles:assign", settings, session_id=principal.session_id
+    )
     if target_id == actor.id or code not in policy.ROLES:
         raise policy.forbidden(actor.id)
     target = session.get(User, target_id)
@@ -130,6 +137,10 @@ def change_role(
         raise HTTPException(404, "Resource not found")
     if grant and not active_user(target):
         raise policy.forbidden(actor.id)
+    if grant and code in PRIVILEGED_ROLES:
+        factor = session.get(MFAFactor, target_id)
+        if factor is None or factor.confirmed_at is None:
+            raise HTTPException(409, "Recipient must enroll MFA before receiving privileged roles")
     role = session.scalar(select(Role).where(Role.code == code))
     if role is None:
         raise DatabaseUnavailable("Role seed unavailable")
@@ -185,13 +196,54 @@ def make_router(
     )
     Actor = Annotated[Principal, Depends(authentication)]
 
+    @router.patch(
+        "/users/{user_id}/status",
+        response_model=CurrentUser,
+        dependencies=[Depends(limit_authorization)],
+    )
+    def update_status(
+        user_id: UUID, payload: StatusUpdate, actor: Actor, session: Database, settings: Config
+    ) -> CurrentUser:
+        def update() -> CurrentUser:
+            user = current_user(actor.credentials, session, settings)
+            policy.require_privileged(
+                session, user, "users:manage", settings, session_id=actor.session_id
+            )
+            if user_id == actor.user_id:
+                raise policy.forbidden(actor.user_id)
+            user = lock_and_reauthenticate(session, actor, user_id, settings, roles=True)
+            policy.require_privileged(
+                session, user, "users:manage", settings, session_id=actor.session_id
+            )
+            target = session.get(User, user_id)
+            if target is None:
+                raise HTTPException(404, "Resource not found")
+            change_status(session, actor.user_id, target, payload.status)
+            session.flush()
+            result = profile(session, user_id)
+            session.commit()
+            logger.info(
+                "account_status_reviewed",
+                extra={"actor_id": str(actor.user_id), "target_user_id": str(user_id)},
+            )
+            return result
+
+        return execute(session, update)
+
     @router.get("/users/{user_id}", response_model=CurrentUser)
     def read_profile(
         user_id: UUID, actor: Actor, session: Database, settings: Config
     ) -> CurrentUser:
         def read() -> CurrentUser:
             user = current_user(actor.credentials, session, settings)
-            policy.require_owner(session, user, user_id, action="read", settings=settings)
+            policy.require_owner(
+                session,
+                user,
+                user_id,
+                action="read",
+                settings=settings,
+                session_id=actor.session_id,
+            )
             logger.info(
                 "profile_read",
                 extra={"actor_id": str(actor.user_id), "target_user_id": str(user_id)},
@@ -208,9 +260,23 @@ def make_router(
     ) -> CurrentUser:
         def update() -> CurrentUser:
             initial = current_user(actor.credentials, session, settings)
-            policy.require_owner(session, initial, user_id, action="update", settings=settings)
+            policy.require_owner(
+                session,
+                initial,
+                user_id,
+                action="update",
+                settings=settings,
+                session_id=actor.session_id,
+            )
             user = lock_and_reauthenticate(session, actor, user_id, settings)
-            policy.require_owner(session, user, user_id, action="update", settings=settings)
+            policy.require_owner(
+                session,
+                user,
+                user_id,
+                action="update",
+                settings=settings,
+                session_id=actor.session_id,
+            )
             target = session.get(User, user_id)
             if target is None:
                 raise HTTPException(404, "Resource not found")
@@ -231,7 +297,14 @@ def make_router(
     ) -> dict[str, list[str]]:
         def read() -> dict[str, list[str]]:
             user = current_user(actor.credentials, session, settings)
-            policy.require_owner(session, user, user_id, action="read", settings=settings)
+            policy.require_owner(
+                session,
+                user,
+                user_id,
+                action="read",
+                settings=settings,
+                session_id=actor.session_id,
+            )
             if session.get(User, user_id) is None:
                 raise HTTPException(404, "Resource not found")
             return {"roles": policy.roles_for(session, user_id)}
@@ -242,7 +315,9 @@ def make_router(
     def catalogue(actor: Actor, session: Database, settings: Config) -> dict[str, list[str]]:
         def read() -> dict[str, list[str]]:
             user = current_user(actor.credentials, session, settings)
-            policy.require_privileged(session, user, "roles:assign", settings)
+            policy.require_privileged(
+                session, user, "roles:assign", settings, session_id=actor.session_id
+            )
             return {"roles": sorted(policy.ROLES)}
 
         return execute(session, read)

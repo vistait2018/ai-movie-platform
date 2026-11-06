@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from app.core.settings import Settings
 from app.models.identity import Permission, Role, RolePermission, User, UserRole
+from app.services.mfa import require_assurance
 from app.services.sessions import active_user
 
 ROLES = frozenset({"viewer", "creator", "moderator", "finance_admin", "super_admin"})
@@ -82,16 +83,30 @@ def require_permission(session: Session, user: User, permission: str) -> None:
         raise forbidden(user.id)
 
 
-def require_privileged(session: Session, user: User, permission: str, settings: Settings) -> None:
+def require_privileged(
+    session: Session,
+    user: User,
+    permission: str,
+    settings: Settings,
+    *,
+    session_id: UUID | None = None,
+) -> None:
     require_permission(session, user, permission)
     # No client flag/header or production configuration can fabricate MFA assurance.
-    # Replace this fail-closed production gate only when privileged MFA is delivered.
+    # Production enablement requires explicit acceptance and a separate reviewed change.
     if settings.environment not in {"development", "test"}:
         raise forbidden(user.id)
+    require_assurance(session, user, session_id)
 
 
 def require_owner(
-    session: Session, user: User, owner_id: UUID, *, action: str, settings: Settings
+    session: Session,
+    user: User,
+    owner_id: UUID,
+    *,
+    action: str,
+    settings: Settings,
+    session_id: UUID | None = None,
 ) -> None:
     if action not in {"read", "update"}:
         raise forbidden(user.id)
@@ -99,7 +114,11 @@ def require_owner(
         require_permission(session, user, "profile:" + action)
     else:
         require_privileged(
-            session, user, "users:" + ("read" if action == "read" else "manage"), settings
+            session,
+            user,
+            "users:" + ("read" if action == "read" else "manage"),
+            settings,
+            session_id=session_id,
         )
 
 

@@ -25,12 +25,18 @@ class BrowserSecurityMiddleware:
                 headers["X-Frame-Options"] = "DENY"
                 headers["Referrer-Policy"] = "no-referrer"
                 headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
-                if scope["path"] not in {"/docs", "/redoc", "/docs/oauth2-redirect"}:
+                if scope["path"] == "/account" or scope["path"].startswith("/account/"):
+                    headers["Content-Security-Policy"] = (
+                        "default-src 'none'; script-src 'self'; style-src 'self'; "
+                        "connect-src 'self'; form-action 'self'; base-uri 'none'; "
+                        "frame-ancestors 'none'"
+                    )
+                elif scope["path"] not in {"/docs", "/redoc", "/docs/oauth2-redirect"}:
                     headers["Content-Security-Policy"] = (
                         "default-src 'none'; frame-ancestors 'none'"
                     )
                 if scope["path"].startswith(
-                    ("/api/v1/auth", "/api/v1/users", "/api/v1/authorization")
+                    ("/api/v1/auth", "/api/v1/users", "/api/v1/authorization", "/account")
                 ):
                     headers["Cache-Control"] = "no-store"
                     headers["Pragma"] = "no-cache"

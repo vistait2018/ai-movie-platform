@@ -189,7 +189,7 @@ def test_migration_round_trip(migration_engine):
         command.check(config)
         assert (
             connection.scalar(text("SELECT version_num FROM alembic_version"))
-            == "0005_refresh_sessions"
+            == "0006_privileged_mfa"
         )
 
 
