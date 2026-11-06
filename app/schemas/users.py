@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.schemas.auth import RegistrationRequest
@@ -11,3 +13,8 @@ class ProfileUpdate(BaseModel):
     @classmethod
     def visible_name(cls, value: str) -> str:
         return RegistrationRequest.normalize_name(value)
+
+
+class StatusUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    status: Literal["pending", "active", "suspended", "deactivated"]

@@ -5,6 +5,7 @@ from secrets import token_urlsafe
 from uuid import UUID, uuid4
 
 import pytest
+from cryptography.fernet import Fernet
 from fastapi.testclient import TestClient
 from pydantic import SecretStr
 from sqlalchemy import event, func, select
@@ -45,6 +46,7 @@ def session_settings(service_settings):
         database_url=service_settings.database_url,
         redis_url=service_settings.redis_url,
         access_signing_key=SecretStr(token_urlsafe(48)),
+        mfa_encryption_key=SecretStr(Fernet.generate_key().decode()),
     )
 
 

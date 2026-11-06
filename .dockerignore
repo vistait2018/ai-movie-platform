@@ -1,10 +1,13 @@
-.git
-.venv*
-.env*
-!.env.example
-**/__pycache__
-.*cache
-.tools
-tests
-docs
-*.log
+# Build context contains only runtime inputs; excludes secrets and unrelated local files.
+**
+!.dockerignore
+!Dockerfile
+!pyproject.toml
+!uv.lock
+!alembic.ini
+!app/
+!app/**
+!migrations/
+!migrations/**
+**/__pycache__/
+**/*.py[cod]

@@ -108,6 +108,40 @@ class AuthSession(Base):
     revoked_reason: Mapped[str | None] = mapped_column(String(32))
 
 
+class MFAFactor(Base):
+    __tablename__ = "mfa_factors"
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+    )
+    encrypted_secret: Mapped[bytes] = mapped_column(LargeBinary)
+    enrollment_session_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("auth_sessions.id", ondelete="SET NULL")
+    )
+    enrollment_expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    confirmed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_counter: Mapped[int] = mapped_column(default=-1)
+
+
+class MFARecoveryCode(Base):
+    __tablename__ = "mfa_recovery_codes"
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("mfa_factors.user_id", ondelete="CASCADE"), primary_key=True
+    )
+    digest: Mapped[str] = mapped_column(String(64), primary_key=True)
+    consumed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class MFAAssurance(Base):
+    __tablename__ = "mfa_assurances"
+    __table_args__ = (CheckConstraint("expires_at > verified_at", name="ck_mfa_assurance_expiry"),)
+    session_id: Mapped[UUID] = mapped_column(
+        ForeignKey("auth_sessions.id", ondelete="CASCADE"), primary_key=True
+    )
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("mfa_factors.user_id", ondelete="CASCADE"))
+    verified_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
 class RefreshCredential(Base):
     __tablename__ = "refresh_credentials"
     __table_args__ = (

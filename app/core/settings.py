@@ -34,6 +34,11 @@ class Settings(BaseSettings):
     browser_cookie_seconds: int = Field(default=604800, ge=60, le=7776000)
     browser_csrf_seconds: int = Field(default=900, ge=60, le=3600)
     email_outbox_key: SecretStr | None = None
+    mfa_encryption_key: SecretStr | None = None
+    mfa_enrollment_seconds: int = Field(default=600, ge=60, le=900)
+    mfa_assurance_seconds: int = Field(default=300, ge=30, le=600)
+    mfa_requests_per_window: int = Field(default=5, ge=1, le=20)
+    mfa_window_seconds: int = Field(default=300, ge=60, le=900)
     verification_seconds: int = Field(default=3600, ge=60, le=86400)
     password_reset_seconds: int = Field(default=900, ge=60, le=3600)
     action_resend_seconds: int = Field(default=60, ge=1, le=3600)

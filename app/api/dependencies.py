@@ -1,4 +1,5 @@
 import logging
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Annotated
 
@@ -19,11 +20,18 @@ bearer = HTTPBearer(auto_error=False, description="Short-lived access token retu
 logger = logging.getLogger("movie.auth")
 
 
-def current_user(
+@dataclass(frozen=True)
+class AuthenticationContext:
+    user: User
+    grant: AccessGrant
+    family: AuthSession | None
+
+
+def authenticated_context(
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)],
     session: Annotated[Session, Depends(get_db_session)],
     settings: Annotated[Settings, Depends(get_settings)],
-) -> User:
+) -> AuthenticationContext:
     rejected = HTTPException(401, "Authentication required", headers={"WWW-Authenticate": "Bearer"})
     if credentials is None or credentials.scheme.lower() != "bearer":
         raise rejected
@@ -41,7 +49,7 @@ def current_user(
                 active_access(user, grant, family, datetime.now(UTC))
                 and int(grant.expires_at.timestamp()) == expiry
             ):
-                return user
+                return AuthenticationContext(user, grant, family)
     except jwt.InvalidTokenError:
         pass
     except (TokenConfigurationError, SQLAlchemyError):
@@ -49,3 +57,11 @@ def current_user(
         raise HTTPException(503, "Authentication temporarily unavailable") from None
     logger.info("access_rejected")
     raise rejected
+
+
+def current_user(
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)],
+    session: Annotated[Session, Depends(get_db_session)],
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> User:
+    return authenticated_context(credentials, session, settings).user

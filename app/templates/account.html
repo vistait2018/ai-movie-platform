@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your account · AI Movie Platform</title>
+  <link rel="stylesheet" href="/account/assets/account.css">
+  <script src="/account/assets/account.js" defer></script>
+</head>
+<body>
+<header><a href="/account" class="brand">AI Movie Platform</a><p>ACCOUNT &amp; SECURITY</p>
+  <h1>Your next story starts here.</h1><p>Sign in, manage your profile and keep your account secure.</p></header>
+<main>
+  <p id="notice" role="status" aria-live="polite">Sign in or create an account below.</p>
+  <noscript>This interface requires JavaScript. Documented authentication APIs remain available.</noscript>
+  <div class="grid">
+    <section><h2>Sign in</h2><form method="post" action="/account" data-action="login">
+      <label>Email<input name="email" type="email" autocomplete="username" required maxlength="320"></label>
+      <label>Password<input name="password" type="password" autocomplete="current-password" required maxlength="128"></label>
+      <button>Sign in</button></form></section>
+    <section><h2>Create an account</h2><form method="post" action="/account" data-action="register">
+      <label>Display name<input name="display_name" autocomplete="nickname" required maxlength="80"></label>
+      <label>Email<input name="email" type="email" autocomplete="email" required maxlength="320"></label>
+      <label>Password · at least 15 characters<input name="password" type="password" autocomplete="new-password" required minlength="15" maxlength="128"></label>
+      <button>Create account</button></form><p>Check your email for a verification token before signing in.</p></section>
+    <section><h2>Email &amp; recovery</h2>
+      <form method="post" action="/account" data-action="request-verification"><label>Email<input name="email" type="email" autocomplete="email" required></label><button>Resend verification</button></form>
+      <form method="post" action="/account" data-action="verify-email"><label>Verification token<input name="token" type="password" autocomplete="off" required maxlength="512"></label><button>Verify email</button></form>
+      <details><summary>Reset a forgotten password</summary>
+        <form method="post" action="/account" data-action="forgot-password"><label>Email<input name="email" type="email" autocomplete="email" required></label><button>Request reset email</button></form>
+        <form method="post" action="/account" data-action="reset-password"><label>Reset token<input name="token" type="password" autocomplete="off" required maxlength="512"></label><label>New password<input name="new_password" type="password" autocomplete="new-password" required minlength="15" maxlength="128"></label><button>Reset password</button></form>
+      </details></section>
+    <section><h2>Profile &amp; sessions</h2><button data-action="profile">Load my profile</button><pre id="profile" aria-live="polite">Not loaded.</pre>
+      <form method="post" action="/account" data-action="profile-update"><label>Display name<input name="display_name" autocomplete="nickname" required maxlength="80"></label><button>Save name</button></form>
+      <div class="buttons"><button data-action="refresh">Renew session</button><button data-action="logout">Sign out</button><button data-action="logout-all">Sign out everywhere</button></div>
+    </section>
+    <section><h2>Authenticator security</h2><p>Use your current password for each step. Fresh verification lasts five minutes by default. Renewing a session does not renew verification.</p>
+      <form method="post" action="/account" data-action="mfa-enroll"><label>Current password<input name="password" type="password" autocomplete="current-password" required maxlength="128"></label><button>Start enrollment</button></form>
+      <pre id="enrollment" hidden></pre>
+      <form method="post" action="/account" data-action="mfa-confirm"><label>Current password<input name="password" type="password" autocomplete="current-password" required maxlength="128"></label><label>Authenticator code<input name="code" type="password" inputmode="numeric" autocomplete="one-time-code" required minlength="6" maxlength="6"></label><button>Confirm authenticator</button></form>
+      <pre id="recovery" hidden></pre><button data-action="clear-secrets">Hide enrollment and recovery details</button>
+      <form method="post" action="/account" data-action="mfa-verify"><label>Current password<input name="password" type="password" autocomplete="current-password" required maxlength="128"></label><label>Fresh code or unused recovery code<input name="code" type="password" autocomplete="one-time-code" required maxlength="128"></label><button>Verify MFA</button></form>
+      <details><summary>Disable authenticator</summary><p>Privileged roles must be removed first. This signs out every session.</p><form method="post" action="/account" data-action="mfa-disable"><label>Current password<input name="password" type="password" autocomplete="current-password" required></label><label>Fresh code or unused recovery code<input name="code" type="password" autocomplete="off" required maxlength="128"></label><button>Disable and sign out</button></form></details>
+    </section>
+    <section><h2>Account administration</h2><p>Requires account-management permission and recent MFA. Privileged operations remain disabled in staging and production pending acceptance.</p>
+      <form method="post" action="/account" data-action="status"><label>Account UUID<input name="user_id" required pattern="[0-9a-fA-F-]{36}" maxlength="36"></label><label>Status<select name="status"><option value="suspended">Suspended</option><option value="deactivated">Deactivated</option><option value="active">Active · verified accounts only</option><option value="pending">Pending · unverified accounts only</option></select></label><button>Update account status</button></form>
+    </section>
+  </div>
+</main><footer>AI Movie Platform · Your account, protected.</footer>
+</body></html>

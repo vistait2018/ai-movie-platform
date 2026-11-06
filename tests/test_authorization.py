@@ -3,6 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 from secrets import token_urlsafe
 from uuid import UUID, uuid4
 
+import pyotp
 import pytest
 from fastapi import HTTPException
 from sqlalchemy import event, select
@@ -25,6 +26,7 @@ from app.models.identity import (
     UserRole,
 )
 from app.services import authorization as policy
+from app.services import rate_limits
 from app.services.rate_limits import limit_authorization
 
 pytestmark = pytest.mark.integration
@@ -33,6 +35,12 @@ pytestmark = pytest.mark.integration
 @pytest.fixture(autouse=True)
 def isolated_authorization_limits(isolated_settings):
     app.dependency_overrides[limit_authorization] = lambda: None
+
+
+@pytest.fixture(autouse=True)
+def isolated_mfa_limits(monkeypatch):
+    # Real MFA rate-limit enforcement is covered separately; keep RBAC fixtures isolated.
+    monkeypatch.setattr("app.api.mfa.check_action_limits", lambda *args, **kwargs: None)
 
 
 @pytest.fixture
@@ -55,11 +63,34 @@ def identities(session_client, session_settings, identity_engine):
 
 def auth(client, account, *, refresh=False):
     data = {"email": account["email"], "password": account["password"]}
-    if refresh:
-        data["session_mode"] = "refresh"
+    data["session_mode"] = "refresh"
     response = client.post("/api/v1/auth/login", json=data)
     assert response.status_code == 200
-    return response.json()
+    pair = response.json()
+    # Exercise real enrollment/proof endpoints instead of inserting or bypassing assurance.
+    if "mfa_recovery" not in account:
+        enrollment = client.post(
+            "/api/v1/auth/mfa/enroll", json={"password": account["password"]}, headers=headers(pair)
+        )
+        assert enrollment.status_code == 200
+        confirmation = client.post(
+            "/api/v1/auth/mfa/confirm",
+            json={
+                "password": account["password"],
+                "code": pyotp.TOTP(enrollment.json()["secret"]).now(),
+            },
+            headers=headers(pair),
+        )
+        assert confirmation.status_code == 200
+        account["mfa_recovery"] = confirmation.json()["recovery_codes"]
+    else:
+        verified = client.post(
+            "/api/v1/auth/mfa/verify",
+            json={"password": account["password"], "code": account["mfa_recovery"].pop()},
+            headers=headers(pair),
+        )
+        assert verified.status_code == 204
+    return pair
 
 
 def headers(pair):
@@ -547,8 +578,6 @@ def test_real_redis_mutation_limit_cannot_be_bypassed_by_resource_ids(
 
     from fastapi import Request
     from redis import Redis
-
-    from app.services import rate_limits
 
     redis = Redis.from_url(session_settings.redis_url.get_secret_value())
     monkeypatch.setattr(rate_limits, "get_registration_redis", lambda: redis)

@@ -1,5 +1,12 @@
 # RBAC and identity ownership — Increment 6
 
+Increment 7 review candidate adds required session-bound MFA in development/test
+and MFA-enrolled privileged recipients; see [MFA contract](MFA.md). The Increment 6
+description below records its accepted baseline. Staging/production remain denied.
+
+The Phase 2 follow-up adds authorized `PATCH /users/{user_id}/status`, shared
+with the browser adapter; see [account administration](ACCOUNT_ADMINISTRATION.md).
+
 Roadmap 4.0. [Decisions](../architecture/AUTHORIZATION_DECISIONS.md),
 [Report 012](../DEVELOPMENT_REPORT_012.md). Existing tables/seeds are reused;
 there is no new migration, role bootstrap or permission-editing API.
