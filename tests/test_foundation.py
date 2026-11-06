@@ -97,7 +97,12 @@ def test_probe_timeout_fails_readiness(monkeypatch):
 @pytest.mark.parametrize("environment", ["staging", "production"])
 def test_deployed_settings_require_explicit_services(environment):
     with pytest.raises(ValidationError):
-        settings(environment=environment)
+        settings(
+            environment=environment,
+            browser_cookie_secure=True,
+            browser_origins=["https://movies.example"],
+            trusted_hosts=["movies.example"],
+        )
 
 
 def test_deployed_settings_reject_placeholder_passwords():
@@ -106,8 +111,19 @@ def test_deployed_settings_reject_placeholder_passwords():
             environment="production",
             database_url="postgresql://movie:replace-example-password-before-use@db/movie",
             redis_url="redis://:secret@cache/0",
+            browser_cookie_secure=True,
+            browser_origins=["https://movies.example"],
+            trusted_hosts=["movies.example"],
         )
-    assert configured(environment="production").environment == "production"
+    assert (
+        configured(
+            environment="production",
+            browser_cookie_secure=True,
+            browser_origins=["https://movies.example"],
+            trusted_hosts=["movies.example"],
+        ).environment
+        == "production"
+    )
 
 
 @pytest.mark.parametrize("url", ["sqlite:///movie.db", "postgresql:///movie", "https://db"])

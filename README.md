@@ -115,3 +115,7 @@ Configure the ignored local .env for `mailtrap_sandbox` and use the existing wor
 ### Increment 4 sessions — acceptance verified
 
 Refresh-mode login, strict refresh rotation and /api/v1/auth/logout plus /logout-all are implemented on the dependent feature branch. Default login stays compatible. See [session/client security contract](docs/development/SESSIONS.md) and [Report 010](docs/DEVELOPMENT_REPORT_010.md) before attempting the new endpoints: live 0005 deployment, advisory and endpoint checks passed; current PR/CI evidence is recorded in Report 010.
+
+## Browser cookie authentication
+
+Increment 5 adds a cookie adapter with CSRF/origin protection over existing PostgreSQL sessions. See [browser contracts and Swagger walkthrough](docs/development/BROWSER_SESSIONS.md) and [Report 011](docs/DEVELOPMENT_REPORT_011.md). Bearer APIs remain compatible with Flutter; Phase 2 is incomplete.

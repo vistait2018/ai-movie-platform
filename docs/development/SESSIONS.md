@@ -45,3 +45,7 @@ Revision 0005_refresh_sessions adds auth_sessions/refresh_credentials and a null
 Downgrade removes refresh-family state and the access/session link. Revoke all affected credentials before any explicitly authorized rollback to prevent still-stored access grants from regaining legacy treatment. No live downgrade is performed. Retention/cleanup and administrative session/device inventory are future work; do not delete consumed credentials while a family can still be active.
 
 The pre-development audit and security decisions were recorded before application edits in [REFRESH_SESSION_DECISIONS.md](../architecture/REFRESH_SESSION_DECISIONS.md). Reference: [RFC 9700 replay detection](https://www.rfc-editor.org/rfc/rfc9700.html#section-4.14), [OWASP session storage guidance](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html).
+
+## Increment 5 browser adapter
+
+The earlier browser restriction described Increment 4. Browser clients can now use [HttpOnly cookie sessions with CSRF protection](BROWSER_SESSIONS.md) on the separate browser router. Existing JSON/Bearer endpoints retain their original contracts for Flutter and API clients. All transports share revocation and strict rotation; no refresh credential is returned to browser JavaScript.
