@@ -5,6 +5,8 @@ WORKDIR /app
 COPY pyproject.toml uv.lock ./
 RUN uv sync --locked --no-dev --no-install-project && groupadd --gid 10001 movie && useradd --uid 10001 --gid movie --no-create-home movie
 COPY --chown=movie:movie app ./app
+COPY --chown=movie:movie alembic.ini ./
+COPY --chown=movie:movie migrations ./migrations
 USER movie
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD ["python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/live', timeout=2)"]

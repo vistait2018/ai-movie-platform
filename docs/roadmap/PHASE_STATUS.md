@@ -5,14 +5,14 @@ Updated: 31 October 2026 (Africa/Lagos). Official Roadmap Version 4.0 is unchang
 ## Current acceptance
 **Phase 1 is complete and formally accepted.** All mandatory development-foundation requirements have verified evidence, including real CI, protected-main enforcement, clean setup and current local service readiness. [Formal acceptance](PHASE_1_ACCEPTANCE.md), [report 006](../DEVELOPMENT_REPORT_006.md), [CI report 005](../DEVELOPMENT_REPORT_005.md).
 
-Phase 0 commercial/product owner decisions remain pending separately. Phase 2 is prepared for implementation; authentication is not implemented yet.
+Phase 0 commercial/product owner decisions remain pending separately. Phase 2 Increment 1 is implemented: persistent pending Viewer registration with identity migration, Argon2id hashing and tests. Full authentication remains incomplete.
 
 | Phase | Status | Evidence / remaining gate |
 | --- | --- | --- |
 | 0 | Documentation prepared; approval pending | PRD, MVP scope, business rules, roles, architecture, preliminary database design, decisions, risks and roadmap written to the working tree. BR-01–13 and proposed service targets await owner decisions. |
 | 1 | **Complete — accepted 31 October 2026** | Local and independent Ubuntu setup/CI verified; protected main enforcement proven; credential sources reconciled with authorization; live API/worker healthy; 24 tests passed, quality/security checks passed, data preserved. See PHASE_1_ACCEPTANCE.md and report 006. |
-| 2 | Plan prepared; implementation not started | Proposed web/mobile opaque-session architecture, minimum identity migrations, RBAC, registration/recovery/MFA and implementation sequence documented in AUTHENTICATION_PLAN.md. No auth/schema code added. |
-| 3 | Design only | Preliminary entity relationships documented; no SQLAlchemy schema or Alembic migrations. |
+| 2 | In progress — Increment 1 implemented | Identity migration/models, secure pending Viewer registration, hashing, atomic duplicate handling, audit and abuse guard implemented/tested. Login, verification/recovery, sessions, RBAC enforcement/admin APIs and acceptance remain future increments. |
+| 3 | Identity subset implemented for Phase 2 | Additive 0001_identity_core applied locally; full financial/media/business schema remains unimplemented. |
 | 4 | Not started | Catalogue/content APIs and publishing absent. |
 | 5 | Not started | Super Admin/finance dashboards and workflows absent. |
 | 6 | Not started | AI story adapter/generation/persistence absent. |
@@ -64,3 +64,9 @@ Phase 0 commercial/product owner decisions remain pending separately. Phase 2 is
 Implement the prepared Phase 2 identity slice: minimum SQLAlchemy/Alembic users/roles/profile schema, secure registration and verification, then shared web/mobile login/session contracts. Continue with recovery/revocation, RBAC, privileged MFA and authorization tests. Use the existing foundation; no new infrastructure redesign is required.
 
 [Phase 2 implementation sequence](../architecture/AUTHENTICATION_PLAN.md). Flutter Android/iOS remain roadmap deliverables; this next phase implements their shared backend contracts, not the mobile UI.
+
+## Instruction 007 — Increment 1
+
+Implemented POST /api/v1/auth/register and additive PostgreSQL identity schema on the Phase 2 feature branch. Original 24 tests preserved; expanded suite 45 passed locally. Runtime Swagger registration smoke passed. Phase 2 is not complete; next Increment 2 delivers login, token issuance and protected current-user behavior. See report 007 and development/REGISTRATION.md for scope and exact results.
+
+Increment 1 feature commit `c854776b9b60dadb718cfea9ffa6720f24eacf6a` is open for review in [PR #3](https://github.com/vistait2018/ai-movie-platform/pull/3); [required CI checks](https://github.com/vistait2018/ai-movie-platform/actions/runs/41193643965) both passed, including canonical Docker migrations. Increment 1 is delivered; full Phase 2 remains incomplete.

@@ -66,3 +66,65 @@ def isolated_settings(monkeypatch):
     yield
     app.dependency_overrides.clear()
     get_settings.cache_clear()
+
+
+@pytest.fixture(scope="session")
+def disposable_identity_database(request):
+    import os
+
+    if os.getenv("RUN_SERVICE_TESTS") != "1":
+        pytest.skip("Requires isolated real PostgreSQL")
+    service_settings = request.getfixturevalue("service_settings")
+    import re
+    from contextlib import contextmanager
+    from uuid import uuid4
+
+    import psycopg
+    from psycopg import sql
+    from sqlalchemy.engine import make_url
+
+    from app.db.session import build_engine
+
+    @contextmanager
+    def database():
+        name = "movie_auth_test_" + uuid4().hex
+        if not re.fullmatch(r"movie_auth_test_[0-9a-f]{32}", name):
+            raise RuntimeError("Unexpected disposable database name")
+        admin_url = service_settings.database_url.get_secret_value()
+        if make_url(admin_url).host not in {"127.0.0.1", "localhost", "::1", "postgres"}:
+            raise RuntimeError("Disposable database tests require explicitly local services")
+        with psycopg.connect(admin_url, autocommit=True) as admin:
+            admin.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(name)))
+        engine = build_engine(
+            make_url(admin_url).set(database=name).render_as_string(hide_password=False)
+        )
+        try:
+            yield engine
+        finally:
+            engine.dispose()
+            # Only this newly created, checked test database is ever dropped. No existing DB/volume.
+            if not re.fullmatch(r"movie_auth_test_[0-9a-f]{32}", name):
+                raise RuntimeError("Refusing cleanup of an unexpected database name")
+            with psycopg.connect(admin_url, autocommit=True) as admin:
+                admin.execute(sql.SQL("DROP DATABASE {}").format(sql.Identifier(name)))
+
+    return database
+
+
+@pytest.fixture(scope="session")
+def identity_engine(disposable_identity_database):
+    from alembic import command
+    from alembic.config import Config
+
+    with disposable_identity_database() as engine:
+        config = Config("alembic.ini")
+        with engine.begin() as connection:
+            config.attributes["connection"] = connection
+            command.upgrade(config, "head")
+        yield engine
+
+
+@pytest.fixture
+def migration_engine(disposable_identity_database):
+    with disposable_identity_database() as engine:
+        yield engine

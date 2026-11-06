@@ -2,7 +2,7 @@
 
 # Preliminary database design
 
-Design only: SQLAlchemy models and Alembic migrations belong to Phase 3, with minimal identity schema introduced as needed for Phase 2. No schema is claimed deployed.
+Phase 2 Increment 1 implements the identity subset via 0001_identity_core: users, roles, permissions, user_roles, role_permissions and security_events. This additive revision is applied to local development PostgreSQL. Remaining business/financial/media schema remains design-only under Phase 3.
 
 | Domain | Proposed entities and relationships |
 | --- | --- |
