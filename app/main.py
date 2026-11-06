@@ -10,6 +10,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.api.auth import router as auth_router
+from app.api.authorization import browser_router as browser_authorization_router
+from app.api.authorization import router as authorization_router
 from app.api.browser import router as browser_router
 from app.api.identity_actions import router as action_router
 from app.api.sessions import router as session_router
@@ -95,6 +97,8 @@ app.include_router(auth_router)
 app.include_router(action_router)
 app.include_router(session_router)
 app.include_router(browser_router)
+app.include_router(authorization_router)
+app.include_router(browser_authorization_router)
 app.add_middleware(BrowserSecurityMiddleware)
 
 

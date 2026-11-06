@@ -17,3 +17,7 @@ All permissions below describe intended behavior; authentication/authorization i
 Deny unless a specific permission and resource scope allow the action. Enforce ownership checks, suspension state, active entitlements and publication state at service/API boundaries. Privileged roles require MFA and audit events. Worker jobs operate with limited service identities and cannot bypass publication or payout authorization. Public catalogue must exclude private drafts. Finance read/export permissions must be separate from money-moving permissions.
 
 Owner approval pending: exact finance approval thresholds, whether separate humans are available for dual control at beta, moderation assignments and support escalation permissions. Add authorization tests during Phase 2 and each feature phase.
+
+## Increment 6 implementation — 5 November 2026
+
+The existing roadmap roles now feed centralized database-backed default-deny checks and identity ownership enforcement. [Implemented matrix and endpoint contracts](../development/AUTHORIZATION.md), [Report 012](../DEVELOPMENT_REPORT_012.md). Earlier descriptions include future media/finance duties; this increment implements identity resources only. Visitor remains anonymous. Legacy seeded admin is preserved but inert/nonassignable. Privileged role administration/cross-owner access is development/test only and denies staging/production until required MFA exists. No real administrator is automatically provisioned.

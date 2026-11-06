@@ -2,7 +2,7 @@
 
 Updated 5 November 2026 (Africa/Lagos). [Official Roadmap Version 4.0](roadmap/ROADMAP_V4.md) is unchanged.
 
-**Current development: Phase 2 Increment 5 is accepted on codex/phase2-browser-sessions.** 225 tests pass locally and on Ubuntu; live cookie/CSRF/rotation/logout/reset checks pass. No new migration; head remains 0005. Commit e977678ec38874f01773a63e4f11a55a76a0306c is in open [PR #8](https://github.com/vistait2018/ai-movie-platform/pull/8), based on #7. [Required quality/containers passed](https://github.com/vistait2018/ai-movie-platform/actions/runs/42050168929), including canonical Docker build. [Report 011](DEVELOPMENT_REPORT_011.md), [browser contract](development/BROWSER_SESSIONS.md). Phase 2 remains incomplete.
+**Current development: Phase 2 Increment 6 RBAC/identity ownership is accepted within its documented development/MFA boundary on codex/phase2-rbac-ownership.** Existing seeded roles/permissions and shared browser/Bearer identity checks are verified by 270 local/Ubuntu tests. Commit e0a7a3f3538f13b7ffc9137f51076864f65f25d4 is in open [PR #9](https://github.com/vistait2018/ai-movie-platform/pull/9), based on #8; [quality/containers passed](https://github.com/vistait2018/ai-movie-platform/actions/runs/42085077043). Production privileged operations deny until MFA. No migration or live administrator bootstrap. [Report 012](DEVELOPMENT_REPORT_012.md), [authorization contract](development/AUTHORIZATION.md). Phase 2 remains incomplete.
 
 Previous Increment 4 is accepted in open PR #7. Older entries below retain historical evidence.
 

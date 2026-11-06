@@ -88,10 +88,11 @@ def check_action_limits(
     limit: int,
     *,
     window_seconds: int | None = None,
+    scope_name: str | None = None,
 ) -> None:
     window = window_seconds or settings.action_window_seconds
     address = request.client.host if request.client else "unknown"
-    scope = sha256(request.url.path.encode()).hexdigest()
+    scope = sha256((scope_name or request.url.path).encode()).hexdigest()
     try:
         client = get_registration_redis()
         for kind, value in (("ip", address), ("identity", identity)):
@@ -165,4 +166,18 @@ def limit_logout(request: Request, settings: Annotated[Settings, Depends(get_set
         settings,
         settings.session_requests_per_window,
         window_seconds=settings.session_window_seconds,
+    )
+
+
+def limit_authorization(
+    request: Request, settings: Annotated[Settings, Depends(get_settings)]
+) -> None:
+    address = request.client.host if request.client else "unknown"
+    check_action_limits(
+        request,
+        address,
+        settings,
+        settings.session_requests_per_window,
+        window_seconds=settings.session_window_seconds,
+        scope_name="identity_mutations",
     )

@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from app.api.dependencies import current_user
+from app.api.authorization import permission_dependency
 from app.core.settings import Settings, get_settings
 from app.core.tokens import TokenConfigurationError
 from app.db.session import DatabaseUnavailable, get_db_session
@@ -103,7 +103,7 @@ def login(
 )
 def me(
     response: Response,
-    user: Annotated[User, Depends(current_user)],
+    user: Annotated[User, Depends(permission_dependency("profile:read"))],
     session: Annotated[Session, Depends(get_db_session)],
 ) -> CurrentUser:
     response.headers["Cache-Control"] = "no-store"
