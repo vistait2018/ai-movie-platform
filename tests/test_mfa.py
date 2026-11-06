@@ -55,6 +55,20 @@ def isolated_mfa_limits(monkeypatch):
     monkeypatch.setattr("app.api.mfa.check_action_limits", lambda *args, **kwargs: None)
 
 
+@pytest.fixture
+def authorization_redis(monkeypatch, session_settings):
+    from redis import Redis
+
+    # Role mutations keep their real limiter; CI has no implicit local .env.
+    with Redis.from_url(
+        session_settings.redis_url.get_secret_value(),
+        socket_connect_timeout=2,
+        socket_timeout=2,
+    ) as redis:
+        monkeypatch.setattr(rate_limits, "get_registration_redis", lambda: redis)
+        yield
+
+
 def enrollment(client, account, pair):
     response = client.post(
         BASE + "/enroll", headers=headers(pair), json={"password": account["password"]}
@@ -276,7 +290,7 @@ def test_environment_gate_even_with_real_assurance(
 
 
 def test_missing_assurance_and_forged_claims_cannot_administer(
-    session_client, session_account, identity_engine
+    session_client, session_account, identity_engine, authorization_redis
 ):
     import jwt
 
@@ -418,7 +432,12 @@ def test_real_redis_mfa_shared_scope_account_limit(session_settings, monkeypatch
 
 
 def test_administrator_provisioning_reset_and_revocation(
-    session_client, session_account, enrolled, identity_engine, session_settings
+    session_client,
+    session_account,
+    enrolled,
+    identity_engine,
+    session_settings,
+    authorization_redis,
 ):
     from app.dev_verify import verify_local_user
 
