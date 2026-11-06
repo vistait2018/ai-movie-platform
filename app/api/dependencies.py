@@ -12,7 +12,8 @@ from sqlalchemy.orm import Session
 from app.core.settings import Settings, get_settings
 from app.core.tokens import TokenConfigurationError, decode_access
 from app.db.session import get_db_session
-from app.models.identity import AccessGrant, User
+from app.models.identity import AccessGrant, AuthSession, User
+from app.services.sessions import active_access
 
 bearer = HTTPBearer(auto_error=False, description="Short-lived access token returned by login")
 logger = logging.getLogger("movie.auth")
@@ -29,17 +30,15 @@ def current_user(
     try:
         user_id, grant_id, expiry = decode_access(credentials.credentials, settings)
         pair = session.execute(
-            select(User, AccessGrant)
+            select(User, AccessGrant, AuthSession)
             .join(AccessGrant, AccessGrant.user_id == User.id)
+            .outerjoin(AuthSession, AuthSession.id == AccessGrant.session_id)
             .where(User.id == user_id, AccessGrant.id == grant_id)
         ).one_or_none()
         if pair is not None:
-            user, grant = pair
+            user, grant, family = pair
             if (
-                user.status == "active"
-                and user.email_verified_at is not None
-                and grant.revoked_at is None
-                and grant.expires_at > datetime.now(UTC)
+                active_access(user, grant, family, datetime.now(UTC))
                 and int(grant.expires_at.timestamp()) == expiry
             ):
                 return user

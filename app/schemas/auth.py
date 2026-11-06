@@ -1,3 +1,4 @@
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, SecretStr, field_validator
@@ -47,6 +48,7 @@ class RegistrationResponse(BaseModel):
 class LoginRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     email: EmailStr
+    session_mode: Literal["access", "refresh"] = "access"
     password: SecretStr = Field(json_schema_extra={"writeOnly": True, "maxLength": 128})
 
     @field_validator("email", mode="before")
@@ -66,6 +68,24 @@ class LoginResponse(BaseModel):
     access_token: str = Field(repr=False)
     token_type: str = "bearer"
     expires_in: int
+
+
+class SessionCredentials(LoginResponse):
+    session_id: UUID
+    refresh_token: str = Field(repr=False)
+    refresh_expires_in: int
+
+
+class RefreshRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    refresh_token: SecretStr = Field(json_schema_extra={"writeOnly": True, "maxLength": 512})
+
+    @field_validator("refresh_token")
+    @classmethod
+    def bounded_refresh(cls, value: SecretStr) -> SecretStr:
+        if not 1 <= len(value.get_secret_value()) <= 512:
+            raise ValueError("Invalid refresh credential")
+        return value
 
 
 class CurrentUser(BaseModel):

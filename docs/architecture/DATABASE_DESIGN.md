@@ -57,3 +57,7 @@ Additive revision 0003_auth_actions_outbox introduces auth_actions (UUID, user F
 ## SMTP metadata — revision 0004
 
 SMTPDelivery adds a unique action reference, provider/status, attempt count, retry/lease/submission times and generic error code. No SMTP message body, raw action token or SMTP credential is stored by the SMTP path. Worker preparation updates only the action digest and job lease in a committed transaction before network delivery. Migration upgrade adds one table/index; earlier revisions and data are preserved. Downgrade is exercised only on disposable test databases.
+
+## Increment 4 schema — applied and verified
+
+0005_refresh_sessions adds AuthSession (user, creation/absolute expiry/revocation reason) and RefreshCredential (session, unique digest, unique optional parent, creation/expiry/consumption/revocation). Nullable indexed AccessGrant.session_id cascades on session deletion; existing grants stay NULL and retain prior behavior. Unique parent enforces one successor; the service serializes User → family → credential. Tests validate disposable upgrade/downgrade/drift and populated legacy preservation. A fresh development backup was verified before applying 0005; host/container head and metadata-drift checks now pass. Rollback must revoke session-linked access before removing links; no live downgrade is executed.

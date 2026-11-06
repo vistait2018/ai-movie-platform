@@ -13,6 +13,7 @@ from app.schemas.auth import (
     EmailActionRequest,
     LoginRequest,
     PasswordResetConfirmation,
+    RefreshRequest,
 )
 
 _COUNTER = """
@@ -80,14 +81,22 @@ def limit_login(
         raise HTTPException(503, "Authentication temporarily unavailable") from None
 
 
-def check_action_limits(request: Request, identity: str, settings: Settings, limit: int) -> None:
+def check_action_limits(
+    request: Request,
+    identity: str,
+    settings: Settings,
+    limit: int,
+    *,
+    window_seconds: int | None = None,
+) -> None:
+    window = window_seconds or settings.action_window_seconds
     address = request.client.host if request.client else "unknown"
     scope = sha256(request.url.path.encode()).hexdigest()
     try:
         client = get_registration_redis()
         for kind, value in (("ip", address), ("identity", identity)):
             key = "auth:action:" + scope + ":" + kind + ":" + sha256(value.encode()).hexdigest()
-            count = client.eval(_COUNTER, 1, key, str(settings.action_window_seconds))
+            count = client.eval(_COUNTER, 1, key, str(window))
             if not isinstance(count, int):
                 raise RuntimeError("Unexpected rate limit response")
             if count > limit:
@@ -95,7 +104,7 @@ def check_action_limits(request: Request, identity: str, settings: Settings, lim
                 raise HTTPException(
                     429,
                     "Too many authentication requests",
-                    headers={"Retry-After": str(settings.action_window_seconds)},
+                    headers={"Retry-After": str(window)},
                 )
     except (RedisError, RuntimeError):
         logging.getLogger("movie.auth").warning("identity_action_rate_unavailable")
@@ -133,4 +142,27 @@ def limit_reset_confirmation(
         payload.token.get_secret_value(),
         settings,
         settings.action_confirmations_per_window,
+    )
+
+
+def limit_refresh(
+    payload: RefreshRequest, request: Request, settings: Annotated[Settings, Depends(get_settings)]
+) -> None:
+    check_action_limits(
+        request,
+        payload.refresh_token.get_secret_value(),
+        settings,
+        settings.session_requests_per_window,
+        window_seconds=settings.session_window_seconds,
+    )
+
+
+def limit_logout(request: Request, settings: Annotated[Settings, Depends(get_settings)]) -> None:
+    address = request.client.host if request.client else "unknown"
+    check_action_limits(
+        request,
+        address,
+        settings,
+        settings.session_requests_per_window,
+        window_seconds=settings.session_window_seconds,
     )

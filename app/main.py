@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 
 from app.api.auth import router as auth_router
 from app.api.identity_actions import router as action_router
+from app.api.sessions import router as session_router
 from app.core.logging import configure_logging
 from app.core.settings import Settings, get_settings
 from app.db.session import DatabaseUnavailable
@@ -90,6 +91,7 @@ async def request_logging(
 
 app.include_router(auth_router)
 app.include_router(action_router)
+app.include_router(session_router)
 
 
 @app.exception_handler(RequestValidationError)

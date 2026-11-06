@@ -17,6 +17,7 @@ from app.schemas.auth import (
     LoginResponse,
     RegistrationRequest,
     RegistrationResponse,
+    SessionCredentials,
 )
 from app.services.authentication import authenticate
 from app.services.email_delivery import DeliveryUnavailable
@@ -60,11 +61,11 @@ def register(
 
 @router.post(
     "/login",
-    response_model=LoginResponse,
+    response_model=SessionCredentials | LoginResponse,
     dependencies=[Depends(limit_login)],
     summary="Authenticate a verified active user",
-    description="JSON credentials for web and Flutter. Returns an access bearer token only; "
-    "no refresh token, cookie session or logout is provided.",
+    description="Default access-only response is preserved. Set session_mode=refresh for a "
+    "rotating refresh family and access credentials. No cookie transport is enabled.",
     responses={
         401: {"description": "Invalid credentials or account not eligible"},
         429: {"description": "Login limit exceeded"},

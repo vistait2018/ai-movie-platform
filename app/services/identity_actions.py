@@ -10,8 +10,9 @@ from sqlalchemy.orm import Session
 
 from app.core.passwords import hash_password
 from app.core.settings import Settings
-from app.models.identity import AccessGrant, AuthAction, EmailOutbox, SecurityEvent, User
+from app.models.identity import AuthAction, EmailOutbox, SecurityEvent, User
 from app.services.email_delivery import EmailDelivery, get_delivery
+from app.services.sessions import revoke_user_sessions
 
 ActionKind = Literal["verify_email", "reset_password"]
 logger = logging.getLogger("movie.auth")
@@ -156,14 +157,7 @@ def redeem_action(
                 if encoded is None:
                     raise RuntimeError("Validated reset password required")
                 user.password_hash = encoded
-                session.execute(
-                    update(AccessGrant)
-                    .where(
-                        AccessGrant.user_id == user.id,
-                        AccessGrant.revoked_at.is_(None),
-                    )
-                    .values(revoked_at=now)
-                )
+                revoke_user_sessions(session, user.id, now, "password_reset")
                 consume_actions(session, user.id, now)
             accepted = True
         session.add(

@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     access_token_audience: str = Field(default="ai-movie-clients", min_length=1, max_length=200)
     login_requests_per_window: int = Field(default=10, ge=1, le=1000)
     login_window_seconds: int = Field(default=60, ge=1, le=3600)
+    refresh_token_seconds: int = Field(default=604800, ge=600, le=7776000)
+    refresh_session_seconds: int = Field(default=2592000, ge=3600, le=7776000)
+    session_requests_per_window: int = Field(default=30, ge=1, le=1000)
+    session_window_seconds: int = Field(default=60, ge=1, le=3600)
     email_outbox_key: SecretStr | None = None
     verification_seconds: int = Field(default=3600, ge=60, le=86400)
     password_reset_seconds: int = Field(default=900, ge=60, le=3600)
@@ -50,6 +54,10 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_services(self) -> "Settings":
+        if self.refresh_token_seconds <= self.access_token_seconds:
+            raise ValueError("Refresh lifetime must exceed access lifetime")
+        if self.refresh_session_seconds < self.refresh_token_seconds:
+            raise ValueError("Session lifetime must cover refresh lifetime")
         for name, secret, schemes in (
             ("database_url", self.database_url, {"postgresql", "postgres"}),
             ("redis_url", self.redis_url, {"redis", "rediss"}),
