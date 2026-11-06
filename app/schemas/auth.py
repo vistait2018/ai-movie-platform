@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, SecretStr, field_validator
 
 
@@ -40,3 +42,35 @@ class RegistrationRequest(BaseModel):
 
 class RegistrationResponse(BaseModel):
     message: str = "Registration request received. Account activation requires email verification."
+
+
+class LoginRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    email: EmailStr
+    password: SecretStr = Field(json_schema_extra={"writeOnly": True, "maxLength": 128})
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def canonical_email(cls, value: object) -> object:
+        return value.strip().casefold() if isinstance(value, str) else value
+
+    @field_validator("password")
+    @classmethod
+    def bounded_password(cls, value: SecretStr) -> SecretStr:
+        if not 1 <= len(value.get_secret_value()) <= 128:
+            raise ValueError("Invalid password length")
+        return value
+
+
+class LoginResponse(BaseModel):
+    access_token: str = Field(repr=False)
+    token_type: str = "bearer"
+    expires_in: int
+
+
+class CurrentUser(BaseModel):
+    id: UUID
+    email: EmailStr
+    display_name: str
+    status: str
+    roles: list[str]

@@ -79,3 +79,16 @@ class SecurityEvent(Base):
     occurred_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+
+
+class AccessGrant(Base):
+    """Revocable access issuance record; never stores the bearer token."""
+
+    __tablename__ = "access_grants"
+    __table_args__ = (CheckConstraint("expires_at > created_at", name="ck_access_grants_expiry"),)
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

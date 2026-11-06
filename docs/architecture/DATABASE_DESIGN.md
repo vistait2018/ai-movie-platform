@@ -45,3 +45,7 @@ erDiagram
 
 ## Migration and verification strategy
 Version-controlled Alembic migrations, empty-database upgrade tests, upgrade of representative existing data, constraint/concurrency tests, backup before destructive changes and compatibility planning for staged releases. Retention, tax precision, business commission/attribution, payout clearing and deletion rules await owner decisions; do not encode invented values.
+
+## Increment 2 implemented access grants
+
+Additive migration 0002_access_grants records UUID jti/user, created_at, expires_at and revoked_at with user FK/index and positive-lifetime constraint. Bearer JWTs are never stored. /me checks grant ownership, expiry, revocation and current verified-active user state. Existing 0001 identity schema and seeds remain unchanged. This is access issuance/revocation metadata, not refresh/session/device management.

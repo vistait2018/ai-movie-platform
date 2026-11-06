@@ -99,3 +99,7 @@ GitHub CI is now verified for repair commit `ec605fa7aa082c8ed20b79bb400b9873873
 ## Phase 2 Increment 1 — registration
 
 `POST /api/v1/auth/register` now persists pending Viewer accounts with Argon2id passwords, atomic uniqueness/role/audit handling and a Redis abuse guard. See the [Swagger walkthrough and migration instructions](docs/development/REGISTRATION.md). Apply `alembic upgrade head` before registration. Login, verification delivery/confirmation, recovery and session endpoints are not yet implemented; Phase 2 remains in progress.
+
+### Phase 2 access authentication
+
+`POST /api/v1/auth/login` authenticates verified active users; `GET /api/v1/auth/me` accepts the returned short-lived bearer token. Registration stays pending. Configure a generated signing key and use the guarded local fixture command in [the authentication guide](docs/development/AUTHENTICATION.md). Refresh/logout and production email verification are not implemented yet.

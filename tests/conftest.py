@@ -58,7 +58,17 @@ def service_settings(pytestconfig):
 @pytest.fixture(autouse=True)
 def isolated_settings(monkeypatch):
     # Unit tests never inherit an operator's local service credentials or environment.
-    for key in ("APP_DATABASE_URL", "APP_REDIS_URL", "APP_READINESS_TIMEOUT_SECONDS"):
+    for key in (
+        "APP_DATABASE_URL",
+        "APP_REDIS_URL",
+        "APP_READINESS_TIMEOUT_SECONDS",
+        "APP_ACCESS_SIGNING_KEY",
+        "APP_ACCESS_TOKEN_SECONDS",
+        "APP_ACCESS_TOKEN_ISSUER",
+        "APP_ACCESS_TOKEN_AUDIENCE",
+        "APP_LOGIN_REQUESTS_PER_WINDOW",
+        "APP_LOGIN_WINDOW_SECONDS",
+    ):
         monkeypatch.delenv(key, raising=False)
     monkeypatch.setenv("APP_ENVIRONMENT", "test")
     get_settings.cache_clear()
