@@ -5,12 +5,19 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from app.core.passwords import hash_password
+from app.core.settings import Settings, get_settings
 from app.db.session import DatabaseUnavailable
 from app.models.identity import Role, SecurityEvent, User, UserRole
 from app.schemas.auth import RegistrationRequest
+from app.services.email_delivery import get_delivery
+from app.services.identity_actions import issue_action
 
 
-def register_user(session: Session, request: RegistrationRequest) -> None:
+def register_user(
+    session: Session, request: RegistrationRequest, settings: Settings | None = None
+) -> None:
+    settings = settings or get_settings()
+    delivery = get_delivery(settings)
     # Hash all valid requests, including duplicates; never replace an existing account's hash.
     encoded = hash_password(request.password.get_secret_value())
     with session.begin():
@@ -32,3 +39,4 @@ def register_user(session: Session, request: RegistrationRequest) -> None:
         if user_id is not None:
             session.add(UserRole(user_id=user_id, role_id=viewer_id))
             session.add(SecurityEvent(subject_user_id=user_id, event="account_registered"))
+            issue_action(session, user_id, str(request.email), "verify_email", settings, delivery)

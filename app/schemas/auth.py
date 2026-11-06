@@ -74,3 +74,40 @@ class CurrentUser(BaseModel):
     display_name: str
     status: str
     roles: list[str]
+
+
+class EmailActionRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    email: EmailStr
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def canonical_email(cls, value: object) -> object:
+        return value.strip().casefold() if isinstance(value, str) else value
+
+
+class ActionConfirmation(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    token: SecretStr = Field(json_schema_extra={"writeOnly": True, "maxLength": 512})
+
+    @field_validator("token")
+    @classmethod
+    def bounded_token(cls, value: SecretStr) -> SecretStr:
+        if not 1 <= len(value.get_secret_value()) <= 512:
+            raise ValueError("Invalid action token")
+        return value
+
+
+class PasswordResetConfirmation(ActionConfirmation):
+    new_password: SecretStr = Field(
+        json_schema_extra={"writeOnly": True, "minLength": 15, "maxLength": 128}
+    )
+
+    @field_validator("new_password")
+    @classmethod
+    def validated_password(cls, value: SecretStr) -> SecretStr:
+        return RegistrationRequest.validate_password(value)
+
+
+class ActionResponse(BaseModel):
+    message: str

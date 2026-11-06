@@ -49,3 +49,7 @@ Version-controlled Alembic migrations, empty-database upgrade tests, upgrade of 
 ## Increment 2 implemented access grants
 
 Additive migration 0002_access_grants records UUID jti/user, created_at, expires_at and revoked_at with user FK/index and positive-lifetime constraint. Bearer JWTs are never stored. /me checks grant ownership, expiry, revocation and current verified-active user state. Existing 0001 identity schema and seeds remain unchanged. This is access issuance/revocation metadata, not refresh/session/device management.
+
+## Increment 3 identity actions and delivery
+
+Additive revision 0003_auth_actions_outbox introduces auth_actions (UUID, user FK/index, constrained purpose, recipient snapshot, unique digest, UTC creation/expiry/consumption) and email_outbox (UUID, unique action FK, encrypted payload and creation time). No raw bearer/action credential is stored in plaintext. Successful/replaced actions delete encrypted delivery payloads; reset consumes all outstanding actions and revokes access_grants atomically. Existing migrations and data remain unchanged. Retention cleanup and real delivery status/retry metadata remain future work.

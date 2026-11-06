@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, String, Text, func
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, LargeBinary, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -92,3 +92,31 @@ class AccessGrant(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class AuthAction(Base):
+    __tablename__ = "auth_actions"
+    __table_args__ = (
+        CheckConstraint("kind IN ('verify_email', 'reset_password')", name="ck_auth_actions_kind"),
+        CheckConstraint("expires_at > created_at", name="ck_auth_actions_expiry"),
+    )
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    kind: Mapped[str] = mapped_column(String(32))
+    recipient: Mapped[str] = mapped_column(String(320))
+    token_digest: Mapped[str] = mapped_column(String(64), unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    consumed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class EmailOutbox(Base):
+    """Durable encrypted development delivery; credentials never stored in plaintext."""
+
+    __tablename__ = "email_outbox"
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    action_id: Mapped[UUID] = mapped_column(
+        ForeignKey("auth_actions.id", ondelete="CASCADE"), unique=True
+    )
+    encrypted_payload: Mapped[bytes] = mapped_column(LargeBinary)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

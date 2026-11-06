@@ -24,6 +24,13 @@ class Settings(BaseSettings):
     access_token_audience: str = Field(default="ai-movie-clients", min_length=1, max_length=200)
     login_requests_per_window: int = Field(default=10, ge=1, le=1000)
     login_window_seconds: int = Field(default=60, ge=1, le=3600)
+    email_outbox_key: SecretStr | None = None
+    verification_seconds: int = Field(default=3600, ge=60, le=86400)
+    password_reset_seconds: int = Field(default=900, ge=60, le=3600)
+    action_resend_seconds: int = Field(default=60, ge=1, le=3600)
+    action_requests_per_window: int = Field(default=5, ge=1, le=100)
+    action_confirmations_per_window: int = Field(default=20, ge=1, le=100)
+    action_window_seconds: int = Field(default=300, ge=1, le=3600)
 
     @model_validator(mode="after")
     def validate_services(self) -> "Settings":
